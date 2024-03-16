@@ -6,9 +6,12 @@
         <groupId>nl.axians.camel</groupId>
         <artifactId>camel-components</artifactId>
         <version>1.0.4-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>camel-datasonnet-starter</artifactId>
+    <version>1.0.4-SNAPSHOT</version>
+
     <name>Axians :: Camel :: Components :: DataSonnet Starter</name>
     <description>Spring Boot Apache Camel DataSonnet component starter. See README.md for details/</description>
     <url>https://github.com/axians-oss/camel-components</url>
@@ -28,6 +31,12 @@
             <organizationUrl>http://www.axians.nl</organizationUrl>
         </developer>
     </developers>
+
+    <scm>
+        <connection>scm:https://github.com/axians-oss/camel-components.git</connection>
+        <developerConnection>scm:git:https://github.com/axians-oss/camel-components.git</developerConnection>
+        <url>https://github.com/axians-oss/camel-components</url>
+    </scm>
 
     <properties>
     </properties>
