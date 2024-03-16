@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>nl.axians.camel</groupId>
+        <artifactId>camel-components</artifactId>
+        <version>1.0.3-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>camel-datasonnet-starter</artifactId>
+    <name>Axians :: Camel :: Components :: DataSonnet Starter</name>
+    <description>Spring Boot Apache Camel DataSonnet component starter. See README.md for details/</description>
+    <url>https://github.com/axians-oss/camel-components</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Jacob Hoeflaken</name>
+            <email>jacob.hoeflaken@axians.com</email>
+            <organization>Axians</organization>
+            <organizationUrl>http://www.axians.nl</organizationUrl>
+        </developer>
+    </developers>
+
+    <properties>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-datasonnet-starter</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
