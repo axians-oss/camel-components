@@ -5,12 +5,12 @@
     <parent>
         <groupId>nl.axians.camel</groupId>
         <artifactId>camel-components</artifactId>
-        <version>1.0.4</version>
+        <version>1.0.5-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>camel-oauth2</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5-SNAPSHOT</version>
 
     <name>Axians :: Camel :: Components :: OAuth2</name>
     <description>Apache Camel OAuth2 component. See README.md for details/</description>
@@ -36,7 +36,7 @@
         <connection>scm:https://github.com/axians-oss/camel-components.git</connection>
         <developerConnection>scm:git:https://github.com/axians-oss/camel-components.git</developerConnection>
         <url>https://github.com/axians-oss/camel-components</url>
-      <tag>1.0.4</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <properties>
