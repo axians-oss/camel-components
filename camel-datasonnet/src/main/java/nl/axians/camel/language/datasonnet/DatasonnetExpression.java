@@ -11,10 +11,7 @@ import com.datasonnet.spi.Library;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.camel.CamelContext;
-import org.apache.camel.Exchange;
-import org.apache.camel.Expression;
-import org.apache.camel.Predicate;
+import org.apache.camel.*;
 import org.apache.camel.spi.ExpressionResultTypeAware;
 import org.apache.camel.support.ExchangeHelper;
 import org.apache.camel.support.ExpressionAdapter;
@@ -34,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static nl.axians.camel.language.datasonnet.DatasonnetConstants.VARIABLE;
+import static nl.axians.camel.language.datasonnet.DatasonnetConstants.VARIABLE_SEPARATOR;
 
 /**
  * Represents a Datasonnet expression.
@@ -246,16 +244,16 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
         // Add all properties that start with the Datasonnet variable prefix.
         theExchange.getProperties().forEach((key, value) -> {
             if (key.startsWith(VARIABLE)) {
-                // TODO: Add support for expressing the mediatype.
-                inputs.put(key, getDocument(theExchange, MediaTypes.APPLICATION_JSON, value));
+                final Variable variable = new Variable(key);
+                inputs.put(variable.name, getDocument(theExchange, variable.mediaType, value));
             }
         });
 
         // Add all headers that start with the Datasonnet variable prefix.
         theExchange.getIn().getHeaders().forEach((key, value) -> {
             if (key.startsWith(VARIABLE)) {
-                // TODO: Add support for expressing the mediatype.
-                inputs.put(key, getDocument(theExchange, MediaTypes.APPLICATION_JSON, value));
+                final Variable variable = new Variable(key);
+                inputs.put(variable.name, getDocument(theExchange, variable.mediaType, value));
             }
         });
 
@@ -280,7 +278,7 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
             final File nextLibDir = new File(nextPath);
             if (nextLibDir.isDirectory()) {
                 try {
-                    Files.walkFileTree(nextLibDir.toPath(), new SimpleFileVisitor<Path>() {
+                    Files.walkFileTree(nextLibDir.toPath(), new SimpleFileVisitor<>() {
 
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -319,5 +317,29 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
     @Override
     public String toString() {
         return "datasonnet: " + getExpressionText();
+    }
+
+    /**
+     * Represents a Datasonnet variable.
+     */
+    @Getter
+    static class Variable {
+        private final MediaType mediaType;
+        private final String name;
+
+        /**
+         * Create a new {@link Variable} with the given name and value.
+         *
+         * @param theVariableName The name of the variable.
+         */
+        public Variable(final String theVariableName) {
+            final String[] parts = theVariableName.split(VARIABLE_SEPARATOR);
+            if (parts.length != 3) {
+                throw new RuntimeCamelException("Invalid Datasonnet variable name: " + theVariableName);
+            }
+
+            name = parts[2];
+            mediaType = MediaType.valueOf(parts[1]);
+        }
     }
 }
