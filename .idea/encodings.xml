@@ -11,6 +11,8 @@
     <file url="file://$PROJECT_DIR$/camel-component-starters/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-datasonnet-starter/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-datasonnet-starter/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/camel-datasonnet/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/camel-datasonnet/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-oauth2-starter/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-oauth2-starter/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-oauth2/src/main/java" charset="UTF-8" />

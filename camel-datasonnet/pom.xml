@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>nl.axians.camel</groupId>
+        <artifactId>camel-components</artifactId>
+        <version>1.0.6-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>camel-datasonnet</artifactId>
+    <version>1.0.6-SNAPSHOT</version>
+
+    <name>Axians :: Camel :: Components :: DataSonnet</name>
+    <description>Apache Camel DataSonnet. See README.md for details/</description>
+    <url>https://github.com/axians-oss/camel-components</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Jacob Hoeflaken</name>
+            <email>jacob.hoeflaken@axians.com</email>
+            <organization>Axians</organization>
+            <organizationUrl>http://www.axians.nl</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:https://github.com/axians-oss/camel-components.git</connection>
+        <developerConnection>scm:git:https://github.com/axians-oss/camel-components.git</developerConnection>
+        <url>https://github.com/axians-oss/camel-components</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <properties>
+        <datasonnet.version>2.5.2-jakarta4</datasonnet.version>
+        <classgraph.version>4.8.168</classgraph.version>
+    </properties>
+
+    <dependencies>
+        <!-- Camel -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-support</artifactId>
+        </dependency>
+
+        <!-- DataSonnet -->
+        <dependency>
+            <groupId>com.datasonnet</groupId>
+            <artifactId>datasonnet-mapper</artifactId>
+            <version>${datasonnet.version}</version>
+        </dependency>
+
+        <!-- Other -->
+        <dependency>
+            <groupId>io.github.classgraph</groupId>
+            <artifactId>classgraph</artifactId>
+            <version>${classgraph.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+</project>
