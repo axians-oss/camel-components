@@ -235,6 +235,13 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
         return mediaType;
     }
 
+    /**
+     * Get the inputs for the Datasonnet expression. This will include the body and all properties and headers that
+     * start with the Datasonnet variable prefix.
+     *
+     * @param theExchange The exchange from which to get the inputs.
+     * @return A {@link Map} containing the inputs.
+     */
     private Map<String, Document<?>> getInputs(final Exchange theExchange) {
         Map<String, Document<?>> inputs = new HashMap<>();
 
