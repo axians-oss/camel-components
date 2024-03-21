@@ -1,0 +1,87 @@
+package nl.axians.camel.language.datasonnet;
+
+import com.datasonnet.document.MediaType;
+import org.apache.camel.CamelContext;
+import org.apache.camel.Expression;
+import org.apache.camel.support.builder.ExpressionBuilder;
+import org.apache.camel.support.language.DefaultAnnotationExpressionFactory;
+import org.apache.camel.support.language.LanguageAnnotation;
+
+import java.lang.annotation.Annotation;
+
+/**
+ * The Datasonnet annotation expression factory.
+ */
+public class DatasonnetAnnotationExpressionFactory extends DefaultAnnotationExpressionFactory {
+
+    /**
+     * Create the expression from the {@link Datasonnet} annotation.
+     *
+     * @param theContext The Camel context.
+     * @param theAnnotation The {@link Datasonnet} annotation.
+     * @param theLanguageAnnotation The language annotation.
+     * @param theExpressionReturnType The expression return type.
+     * @return The expression.
+     */
+    @Override
+    public Expression createExpression(final CamelContext theContext,
+                                       final Annotation theAnnotation,
+                                       final LanguageAnnotation theLanguageAnnotation,
+                                       final Class<?> theExpressionReturnType) {
+        final String expression = getExpressionFromAnnotation(theAnnotation);
+        final DatasonnetExpression expr = new DatasonnetExpression(expression);
+
+        // Result type.
+        Class<?> resultType = getResultType(theAnnotation);
+        if (resultType.equals(Object.class)) {
+            resultType = theExpressionReturnType;
+        }
+
+        // Source.
+        final String source = getSource(theAnnotation);
+        expr.setSource(ExpressionBuilder.singleInputExpression(source));
+
+        // Media types.
+        if (theAnnotation instanceof Datasonnet annotation) {
+            if (!annotation.bodyMediaType().isEmpty()) {
+                expr.setBodyMediaType(MediaType.valueOf(annotation.bodyMediaType()));
+            }
+
+            if (!annotation.outputMediaType().isEmpty()) {
+                expr.setOutputMediaType(MediaType.valueOf(annotation.outputMediaType()));
+            }
+        }
+
+        return ExpressionBuilder.convertToExpression(expr, resultType);
+    }
+
+    /**
+     * Get the expression result type from the theAnnotation.
+     *
+     * @param theAnnotation The theAnnotation.
+     * @return The expression result type.
+     */
+    protected Class<?> getResultType(final Annotation theAnnotation) {
+        return (Class<?>) getAnnotationObjectValue(theAnnotation, "resultType");
+    }
+
+    /**
+     * Get the expression source from the theAnnotation.
+     *
+     * @param theAnnotation The theAnnotation.
+     * @return The expression source.
+     */
+    protected String getSource(Annotation theAnnotation) {
+        String source = null;
+        try {
+            source = (String) getAnnotationObjectValue(theAnnotation, "source");
+        } catch (Exception ignored) {
+        }
+
+        if (source != null && source.isBlank()) {
+            return null;
+        }
+
+        return source;
+    }
+}

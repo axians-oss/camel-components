@@ -6,6 +6,7 @@ import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Expression;
+import org.apache.camel.Predicate;
 import org.apache.camel.spi.annotations.Language;
 import org.apache.camel.support.LRUCacheFactory;
 import org.apache.camel.support.SingleInputTypedLanguageSupport;
@@ -44,6 +45,31 @@ public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
      * Cache of compiled DataSonnet scripts.
      */
     private final Map<String, Mapper> mapperCache = LRUCacheFactory.newLRUSoftCache(16, 1000, true);
+
+    @Override
+    public Predicate createPredicate(Expression source, String expression, Object[] properties) {
+        return (Predicate) createExpression(source, expression, properties);
+    }
+
+    @Override
+    public Predicate createPredicate(String expression) {
+        return createPredicate(null, expression, null);
+    }
+
+    @Override
+    public Predicate createPredicate(String expression, Object[] properties) {
+        return createPredicate(null, expression, properties);
+    }
+
+    @Override
+    public Expression createExpression(String expression) {
+        return createExpression(null, expression, null);
+    }
+
+    @Override
+    public Expression createExpression(String expression, Object[] properties) {
+        return createExpression(null, expression, properties);
+    }
 
     /**
      * Create a new {@link DatasonnetExpression}.
