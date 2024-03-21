@@ -62,7 +62,11 @@ public class DatasonnetAnnotationExpressionFactory extends DefaultAnnotationExpr
      * @return The expression result type.
      */
     protected Class<?> getResultType(final Annotation theAnnotation) {
-        return (Class<?>) getAnnotationObjectValue(theAnnotation, "resultType");
+        if (theAnnotation instanceof Datasonnet annotation) {
+            return annotation.resultType();
+        }
+
+        return null;
     }
 
     /**
@@ -73,15 +77,11 @@ public class DatasonnetAnnotationExpressionFactory extends DefaultAnnotationExpr
      */
     protected String getSource(Annotation theAnnotation) {
         String source = null;
-        try {
-            source = (String) getAnnotationObjectValue(theAnnotation, "source");
-        } catch (Exception ignored) {
+
+        if (theAnnotation instanceof Datasonnet annotation) {
+            source = annotation.source();
         }
 
-        if (source != null && source.isBlank()) {
-            return null;
-        }
-
-        return source;
+        return (source != null && !source.isBlank()) ? source : null;
     }
 }
