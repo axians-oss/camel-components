@@ -21,6 +21,7 @@
         <option value="$PROJECT_DIR$/camel-aws-sig-starter/pom.xml" />
         <option value="$PROJECT_DIR$/camel-aws-sig/pom.xml" />
         <option value="$PROJECT_DIR$/camel-component-starters/pom.xml" />
+        <option value="$PROJECT_DIR$/camel-opentelemetry-starter/pom.xml" />
         <option value="$PROJECT_DIR$/tooling/pom.xml" />
       </set>
     </option>
