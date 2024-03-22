@@ -49,7 +49,7 @@
         </dependency>
         <dependency>
             <groupId>nl.axians.camel</groupId>
-            <artifactId>camel-datasonnet-starter</artifactId>
+            <artifactId>camel-datasonnet</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
