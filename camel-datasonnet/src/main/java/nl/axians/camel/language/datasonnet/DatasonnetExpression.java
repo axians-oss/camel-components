@@ -102,19 +102,16 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
 
         language = (DatasonnetLanguage) theContext.resolveLanguage("datasonnet");
         language.computeIfMiss(expression, () -> {
-            // Make sure we have input names.
-            if (inputNames == null) {
-                inputNames = new ArrayList<>();
-                inputNames.add("body");
-            }
+            final Set<String> names = new HashSet<>();
+            names.add("body");
 
-            // Make sure we have body as input name.
-            if (!inputNames.contains("body")) {
-                inputNames.add("body");
+            // Make sure we have input names.
+            if (inputNames != null) {
+                names.addAll(inputNames);
             }
 
             MapperBuilder builder = new MapperBuilder(expression)
-                    .withInputNames(inputNames)
+                    .withInputNames(names)
                     .withImports(resolveImports(language))
                     .withDefaultOutput(MediaTypes.APPLICATION_JAVA);
 
