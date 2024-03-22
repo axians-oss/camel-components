@@ -1,0 +1,20 @@
+/** DataSonnet
+version=2.5
+default=null
+input body application/json
+output application/json
+*/
+
+{
+    pid: body.userId,
+    name: body.name,
+    age: header.age,
+    birthCity: header.birthCity,
+    email: email,
+    address: {
+        street: property.street,
+        city: property.city,
+        state: property.state,
+        zipCode: property.zip
+    }
+}

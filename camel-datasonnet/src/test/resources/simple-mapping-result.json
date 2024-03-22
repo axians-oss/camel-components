@@ -1,0 +1,13 @@
+{
+  "pid": 123,
+  "name": "John Doe",
+  "age": 25,
+  "birthCity": "San Francisco",
+  "email": "john.doe@heaven.com",
+  "address": {
+    "street": "123 Main St",
+    "city": "Springfield",
+    "state": "IL",
+    "zipCode": "62701"
+  }
+}

@@ -15,20 +15,19 @@ import org.apache.camel.*;
 import org.apache.camel.spi.ExpressionResultTypeAware;
 import org.apache.camel.support.ExchangeHelper;
 import org.apache.camel.support.ExpressionAdapter;
+import org.apache.camel.util.IOHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static nl.axians.camel.language.datasonnet.DatasonnetConstants.VARIABLE;
 import static nl.axians.camel.language.datasonnet.DatasonnetConstants.VARIABLE_SEPARATOR;
@@ -62,13 +61,34 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
 
     private DatasonnetLanguage language;
 
+    @Getter
+    @Setter
+    private List<String> inputNames;
+
     /**
      * Create a new {@link DatasonnetExpression} with the given expression.
      *
      * @param theExpression The Datasonnet expression.
      */
     public DatasonnetExpression(final String theExpression) {
-        expression = theExpression;
+        expression = loadResource(theExpression);
+    }
+
+    private String loadResource(String theExpression) {
+        if (theExpression.startsWith("resource:classpath:")) {
+            final String resource = theExpression.substring("resource:classpath:".length());
+            try (final InputStream is = getClass().getResourceAsStream(resource)) {
+                if (is == null) {
+                    throw new IllegalArgumentException("Resource not found: " + resource);
+                }
+
+                return IOHelper.loadText(is);
+            } catch (IOException e) {
+                throw new RuntimeCamelException("Error loading resource: " + resource, e);
+            }
+        }
+
+        return theExpression;
     }
 
     /**
@@ -82,8 +102,19 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
 
         language = (DatasonnetLanguage) theContext.resolveLanguage("datasonnet");
         language.computeIfMiss(expression, () -> {
+            // Make sure we have input names.
+            if (inputNames == null) {
+                inputNames = new ArrayList<>();
+                inputNames.add("body");
+            }
+
+            // Make sure we have body as input name.
+            if (!inputNames.contains("body")) {
+                inputNames.add("body");
+            }
+
             MapperBuilder builder = new MapperBuilder(expression)
-                    .withInputNames("body")
+                    .withInputNames(inputNames)
                     .withImports(resolveImports(language))
                     .withDefaultOutput(MediaTypes.APPLICATION_JAVA);
 
@@ -184,7 +215,7 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
             } else if (MediaTypes.APPLICATION_JAVA.equalsTypeAndSubtype(theMediaType) || theMediaType == null) {
                 document = new DefaultDocument<>(theContent);
             } else {
-                document = new DefaultDocument<>(text, bodyMediaType);
+                document = new DefaultDocument<>(text, theMediaType);
             }
         }
 
@@ -349,4 +380,5 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
             mediaType = MediaType.valueOf(parts[1]);
         }
     }
+
 }
