@@ -48,8 +48,9 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel.springboot</groupId>
+            <groupId>nl.axians.camel</groupId>
             <artifactId>camel-datasonnet-starter</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
