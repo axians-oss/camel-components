@@ -8,6 +8,7 @@ import org.apache.camel.support.language.DefaultAnnotationExpressionFactory;
 import org.apache.camel.support.language.LanguageAnnotation;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 
 /**
  * The Datasonnet annotation expression factory.
@@ -49,6 +50,10 @@ public class DatasonnetAnnotationExpressionFactory extends DefaultAnnotationExpr
 
             if (!annotation.outputMediaType().isEmpty()) {
                 expr.setOutputMediaType(MediaType.valueOf(annotation.outputMediaType()));
+            }
+
+            if (annotation.inputNames() != null) {
+                expr.setInputNames(List.of(annotation.inputNames()));
             }
         }
 

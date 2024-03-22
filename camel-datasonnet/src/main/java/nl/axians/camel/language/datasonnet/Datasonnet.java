@@ -37,4 +37,9 @@ public @interface Datasonnet {
      */
     String outputMediaType() default "";
 
+    /**
+     * The extra input names that should be available in the datasonnet expression.
+     */
+    String[] inputNames();
+
 }

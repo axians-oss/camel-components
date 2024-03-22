@@ -58,7 +58,7 @@ public class MappingTests extends CamelTestSupport {
                         .setHeader(dsonnetVarName("header", MediaTypes.APPLICATION_JSON), constant(header))
                         .setProperty(dsonnetVarName("email", MediaTypes.APPLICATION_JAVA), constant("john.doe@heaven.com"))
                         .transform(dsonnet("resource:classpath:/simple-mapping.ds", String.class,
-                                "body", "property", "header", "email"))
+                                "property", "header", "email"))
                         .to("mock:result");
                 // @formatter:on
             }
