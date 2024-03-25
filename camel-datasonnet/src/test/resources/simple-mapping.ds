@@ -7,7 +7,7 @@ output application/json
 
 {
     pid: body.userId,
-    name: body.name,
+    name: name,
     age: header.age,
     birthCity: header.birthCity,
     email: email,
