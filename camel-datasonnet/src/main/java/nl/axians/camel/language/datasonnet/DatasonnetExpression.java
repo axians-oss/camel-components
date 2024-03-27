@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.regex.Matcher;
 
 import static nl.axians.camel.language.datasonnet.DatasonnetConstants.VARIABLE;
 import static nl.axians.camel.language.datasonnet.DatasonnetConstants.VARIABLE_SEPARATOR;
@@ -37,6 +38,9 @@ import static nl.axians.camel.language.datasonnet.DatasonnetConstants.VARIABLE_S
  */
 @Slf4j
 public class DatasonnetExpression extends ExpressionAdapter implements ExpressionResultTypeAware {
+
+    private static final java.util.regex.Pattern PATTERN = java.util.regex.Pattern.compile("^input body.*",
+            java.util.regex.Pattern.MULTILINE);
 
     private final String expression;
 
@@ -229,12 +233,21 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
      */
     private MediaType getBodyMediaType(final Exchange theExchange) {
         MediaType mediaType = bodyMediaType;
-        if (mediaType == null && !expression.startsWith(Header.DATASONNET_HEADER)) {
-            final String contentType = theExchange.getProperty(DatasonnetConstants.BODY_MEDIATYPE,
-                    theExchange.getIn().getHeader(Exchange.CONTENT_TYPE), String.class);
-            if (contentType != null) {
-                mediaType = MediaType.valueOf(contentType);
+
+        if (expression.startsWith(Header.DATASONNET_HEADER)) {
+            final Matcher matcher = PATTERN.matcher(expression);
+            if (matcher.find()) {
+                final String header = matcher.group(0);
+                final String[] parts = header.split(" ");
+                if (parts.length > 2) {
+                    mediaType = MediaType.valueOf(parts[2]);
+                }
             }
+        }
+
+        final String contentType = theExchange.getIn().getHeader(DatasonnetConstants.BODY_MEDIATYPE, String.class);
+        if (contentType != null) {
+            mediaType = MediaType.valueOf(contentType);
         }
 
         return mediaType;
