@@ -163,7 +163,9 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
         final MediaType bodyMediaType = getBodyMediaType(theExchange);
         final MediaType outputMediaType = getOutputMediaType(theExchange);
         final Document<?> body = getBodyAsDocument(theExchange, bodyMediaType);
+
         final Map<String, Document<?>> inputs = getInputs(theExchange);
+        inputs.put("body", body);
 
         final Mapper mapper = language.lookup(expression).orElseThrow(() ->
                 new IllegalStateException("Datasonnet expression not initialized!"));
@@ -285,9 +287,6 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
      */
     private Map<String, Document<?>> getInputs(final Exchange theExchange) {
         Map<String, Document<?>> inputs = new HashMap<>();
-
-        // Add the body as a Document.
-        inputs.put("body", getBodyAsDocument(theExchange, getBodyMediaType(theExchange)));
 
         // Add all properties that start with the Datasonnet variable prefix.
         theExchange.getProperties().forEach((key, value) -> {

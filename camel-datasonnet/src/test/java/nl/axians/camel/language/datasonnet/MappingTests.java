@@ -6,6 +6,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.RoutesBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.converter.stream.InputStreamCache;
 import org.apache.camel.test.junit5.CamelTestSupport;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -29,6 +30,29 @@ public class MappingTests extends CamelTestSupport {
 
         // Act
         template.sendBody("direct:transform", body);
+
+        // Assert
+        final MockEndpoint mockResult = getMockEndpoint("mock:result");
+        mockResult.expectedMessageCount(1);
+
+        final Exchange exchange = mockResult.assertExchangeReceived(0);
+        final Object result = exchange.getMessage().getBody();
+
+        log.info("Result: {}", result);
+
+        assertThat(result).isInstanceOf(String.class);
+        JSONAssert.assertEquals(expectedResult, (String) result, false);
+    }
+
+    @Test
+    public void shouldUseStreamCacheBodyAndVariables() throws Exception {
+        // Arrange
+        final String body = loadResource("/simple-mapping-payload.json");
+        final InputStreamCache streamCache = new InputStreamCache(body.getBytes(StandardCharsets.UTF_8));
+        final String expectedResult = loadResource("/simple-mapping-result.json");
+
+        // Act
+        template.sendBody("direct:transform", streamCache);
 
         // Assert
         final MockEndpoint mockResult = getMockEndpoint("mock:result");
