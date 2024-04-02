@@ -1,6 +1,7 @@
 package nl.axians.camel.oauth2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.DefaultProducer;
 
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class OAuth2Producer extends DefaultProducer {
 
     private final OAuth2Endpoint endpoint;
@@ -84,12 +86,14 @@ public class OAuth2Producer extends DefaultProducer {
     @Override
     public void process(Exchange exchange) throws Exception {
         if (accessToken == null || tokenExpiration.isBefore(Instant.now())) {
+            log.info("Retrieving access token from {}", httpRequest.uri().toString());
             final HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
                 throw new OAuth2Exception("Failed to retrieve access token {0}: {1} {2}",
                         configuration.getName(), response.statusCode(), response.body());
             }
 
+            log.info("Received access token response: {}", response.body());
             final TokenResponse tokenResponse = objectMapper.readValue(response.body(), TokenResponse.class);
             long timeToLive = tokenResponse.getExpiresIn() - endpoint.getConfiguration().getTokenExpirationThreshold();
             accessToken = tokenResponse.getAccessToken();
