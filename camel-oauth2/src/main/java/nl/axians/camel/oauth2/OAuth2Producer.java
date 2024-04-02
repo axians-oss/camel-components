@@ -89,11 +89,11 @@ public class OAuth2Producer extends DefaultProducer {
             log.info("Retrieving access token from {}", httpRequest.uri().toString());
             final HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
+                log.info("Error getting access token {}: {}", response.statusCode(), response.body());
                 throw new OAuth2Exception("Failed to retrieve access token {0}: {1} {2}",
                         configuration.getName(), response.statusCode(), response.body());
             }
 
-            log.info("Received access token response: {}", response.body());
             final TokenResponse tokenResponse = objectMapper.readValue(response.body(), TokenResponse.class);
             long timeToLive = tokenResponse.getExpiresIn() - endpoint.getConfiguration().getTokenExpirationThreshold();
             accessToken = tokenResponse.getAccessToken();
