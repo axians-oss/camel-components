@@ -38,8 +38,6 @@ public class MappingTests extends CamelTestSupport {
         final Exchange exchange = mockResult.assertExchangeReceived(0);
         final Object result = exchange.getMessage().getBody();
 
-        log.info("Result: {}", result);
-
         assertThat(result).isInstanceOf(String.class);
         JSONAssert.assertEquals(expectedResult, (String) result, false);
     }
@@ -61,8 +59,6 @@ public class MappingTests extends CamelTestSupport {
         final Exchange exchange = mockResult.assertExchangeReceived(0);
         final Object result = exchange.getMessage().getBody();
 
-        log.info("Result: {}", result);
-
         assertThat(result).isInstanceOf(String.class);
         JSONAssert.assertEquals(expectedResult, (String) result, false);
     }
@@ -78,13 +74,13 @@ public class MappingTests extends CamelTestSupport {
 
                 // @formatter:off
                 from("direct:transform")
-                        .setProperty(dsonnetVarName("property", MediaTypes.APPLICATION_JSON), constant(property))
-                        .setHeader(dsonnetVarName("header", MediaTypes.APPLICATION_JSON), constant(header))
-                        .setProperty(dsonnetVarName("email", MediaTypes.APPLICATION_JAVA), constant("john.doe@heaven.com"))
-                        .setProperty(dsonnetVarName("name", MediaTypes.APPLICATION_JAVA), jsonpath("$.name", String.class))
-                        .transform(dsonnet("resource:classpath:/simple-mapping.ds", String.class,
-                                "property", "header", "email", "name"))
-                        .to("mock:result");
+                    .setProperty(dsonnetVarName("property", MediaTypes.APPLICATION_JSON), constant(property))
+                    .setHeader(dsonnetVarName("header", MediaTypes.APPLICATION_JSON), constant(header))
+                    .setProperty(dsonnetVarName("email", MediaTypes.APPLICATION_JAVA), constant("john.doe@heaven.com"))
+                    .setProperty(dsonnetVarName("name", MediaTypes.APPLICATION_JAVA), jsonpath("$.name", String.class))
+                    .transform(dsonnet("resource:classpath:/simple-mapping.ds", String.class,
+                            "property", "header", "email", "name"))
+                    .to("mock:result");
                 // @formatter:on
             }
 
