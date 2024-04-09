@@ -115,6 +115,7 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
             }
 
             MapperBuilder builder = new MapperBuilder(expression)
+                    .withLibrary(StdXLibrary.getInstance())
                     .withInputNames(names)
                     .withImports(resolveImports(language))
                     .withDefaultOutput(MediaTypes.APPLICATION_JAVA);
