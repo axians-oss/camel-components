@@ -87,10 +87,9 @@ public class OAuth2Producer extends DefaultProducer {
     @Override
     public void process(Exchange exchange) throws Exception {
         if (accessToken == null || tokenExpiration.isBefore(Instant.now())) {
-            log.info("Retrieving access token from {} for scope {}", httpRequest.uri().toString(), configuration.getScope());
+            log.debug("Retrieving access token from {} for scope {}", httpRequest.uri().toString(), configuration.getScope());
             final HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() != 200) {
-                log.info("Error getting access token {}: {}", response.statusCode(), response.body());
                 throw new OAuth2Exception("Failed to retrieve access token {0}: {1} {2}",
                         configuration.getName(), response.statusCode(), response.body());
             }
@@ -102,7 +101,7 @@ public class OAuth2Producer extends DefaultProducer {
             tokenExpiration = Instant.now().plusSeconds(timeToLive > 0 ? timeToLive : 0);
         }
 
-        log.info("Setting Authorization header with token type {} and expiration {}", tokenType,
+        log.debug("Setting Authorization header with token type {} and expiration {}", tokenType,
                 DateTimeFormatter.ISO_INSTANT.format(tokenExpiration));
         exchange.getIn().setHeader("Authorization", tokenType + " " + accessToken);
     }
