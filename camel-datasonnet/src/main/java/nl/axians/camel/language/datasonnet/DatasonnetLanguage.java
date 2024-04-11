@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Expression;
 import org.apache.camel.Predicate;
 import org.apache.camel.spi.annotations.Language;
-import org.apache.camel.support.LRUCacheFactory;
 import org.apache.camel.support.SingleInputTypedLanguageSupport;
 
 import java.io.IOException;
@@ -44,7 +43,8 @@ public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
     /**
      * Cache of compiled DataSonnet scripts.
      */
-    private final Map<String, Mapper> mapperCache = LRUCacheFactory.newLRUSoftCache(16, 1000, true);
+//    private final Map<String, Mapper> mapperCache = LRUCacheFactory.newLRUSoftCache(16, 1000, true);
+    private final Map<String, Mapper> mapperCache = new HashMap<>(16);
 
     @Override
     public Predicate createPredicate(Expression source, String expression, Object[] properties) {
