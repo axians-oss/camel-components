@@ -120,12 +120,12 @@ public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
     /**
      * Compute a DataSonnet script if it is not in the cache.
      *
-     * @param theScript The script to compute.
+     * @param theName The name of the script to compute.
      * @param mapperSupplier The supplier to compute the script if not present yet.
      */
-    void computeIfMiss(final String theScript,
+    void computeIfMiss(final String theName,
                        final Supplier<Mapper> mapperSupplier) {
-        mapperCache.computeIfAbsent(theScript, k -> mapperSupplier.get());
+        mapperCache.computeIfAbsent(theName, k -> mapperSupplier.get());
     }
 
     /**

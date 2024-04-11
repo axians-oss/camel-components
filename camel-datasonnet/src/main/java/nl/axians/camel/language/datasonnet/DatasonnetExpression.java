@@ -43,6 +43,7 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
             java.util.regex.Pattern.MULTILINE);
 
     private final String expression;
+    private final String name;
 
     @Getter
     @Setter
@@ -75,6 +76,7 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
      * @param theExpression The Datasonnet expression.
      */
     public DatasonnetExpression(final String theExpression) {
+        name = theExpression;
         expression = loadResource(theExpression);
     }
 
@@ -105,7 +107,8 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
         super.init(theContext);
 
         language = (DatasonnetLanguage) theContext.resolveLanguage("datasonnet");
-        language.computeIfMiss(expression, () -> {
+        language.computeIfMiss(name, () -> {
+            log.info("Initializing Datasonnet expression {}", name);
             final Set<String> names = new HashSet<>();
             names.add("body");
 
@@ -124,6 +127,7 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
             for (Library lib : additionalLibraries) {
                 builder = builder.withLibrary(lib);
             }
+
             return builder.build();
         });
     }
@@ -168,8 +172,8 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
         final Map<String, Document<?>> inputs = getInputs(theExchange);
         inputs.put("body", body);
 
-        final Mapper mapper = language.lookup(expression).orElseThrow(() ->
-                new IllegalStateException("Datasonnet expression not initialized!"));
+        final Mapper mapper = language.lookup(name).orElseThrow(() ->
+                new IllegalStateException("Datasonnet expression not initialized: " + name));
         if (resultType == null || resultType.equals(Document.class)) {
             return mapper.transform(body, inputs, outputMediaType, Object.class);
         } else {
