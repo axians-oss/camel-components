@@ -1,6 +1,5 @@
 package nl.axians.camel.language.datasonnet;
 
-import lombok.AllArgsConstructor;
 import lombok.ToString;
 
 import java.util.List;
@@ -13,16 +12,22 @@ import static nl.axians.camel.language.datasonnet.AddressLineTokenizer.Token.Typ
  */
 public class AddressLineParser {
 
-   @ToString
+    /**
+     * This class represents the structured address line consisting out of a street, house number, and house number.
+     */
+    @ToString
     public static class Result {
         public String streetName;
         public Long houseNumber;
         public String houseNumberAddition;
 
-        public Result(String streetName, Long houseNumber, String houseNumberAddition) {
-            this.streetName = streetName.trim();
-            this.houseNumber = houseNumber;
-            this.houseNumberAddition = houseNumberAddition;
+        /**
+         * Constructs a new instance of the Result class.
+         */
+        public Result(final String theStreetName, final Long theHouseNumber, final String theHouseNumberAddition) {
+            streetName = (theStreetName != null) ?  theStreetName.trim() : null;
+            houseNumber = theHouseNumber;
+            houseNumberAddition = (theHouseNumberAddition != null) ? theHouseNumberAddition.trim() : null;
         }
     }
 
@@ -116,12 +121,17 @@ public class AddressLineParser {
             return new Result(streetName, houseNumber, addition);
         }
 
-        throw new IllegalArgumentException("Invalid address line: " + theAddressLine);
+        return new Result(null, null, null);
     }
 
+    /**
+     * Splits the house number and house number addition.
+     *
+     * @param houseNumberAddition The house number and house number addition to split.
+     * @return The house number (index 0) and house number addition (index 1).
+     */
     public static String[] splitHouseNumberAndAddition(String houseNumberAddition) {
-        String[] parts = houseNumberAddition.split("(?<=\\d)(?=[^\\d])|(?<=[^\\d])(?=\\d)", 2);
-        return parts;
+        return houseNumberAddition.split("(?<=\\d)(?=[^\\d])|(?<=[^\\d])(?=\\d)", 2);
     }
 
 }
