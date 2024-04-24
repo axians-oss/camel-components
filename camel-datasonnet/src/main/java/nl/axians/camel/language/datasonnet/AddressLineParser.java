@@ -13,12 +13,17 @@ import static nl.axians.camel.language.datasonnet.AddressLineTokenizer.Token.Typ
  */
 public class AddressLineParser {
 
-    @AllArgsConstructor
-    @ToString
+   @ToString
     public static class Result {
         public String streetName;
         public Long houseNumber;
         public String houseNumberAddition;
+
+        public Result(String streetName, Long houseNumber, String houseNumberAddition) {
+            this.streetName = streetName.trim();
+            this.houseNumber = houseNumber;
+            this.houseNumberAddition = houseNumberAddition;
+        }
     }
 
     /**
@@ -38,7 +43,7 @@ public class AddressLineParser {
         final List<AddressLineTokenizer.Token> tokens = AddressLineTokenizer.tokenize(theAddressLine);
         final int lastTokenIdx = tokens.size() - 1;
 
-        if (tokens.get(0).type == WORD_NOT_STARTING_WITH_DIGIT) {
+        if (tokens.get(0).type == WORD_NOT_STARTING_WITH_DIGIT || tokens.get(lastTokenIdx).type != WORD_NOT_STARTING_WITH_DIGIT) {
             // StreetName ([HouseNumber] [Addition] || [HouseNumber+Addition])
             if (lastTokenIdx == 1) {
                 if (tokens.get(1).type == NUMBER) {
@@ -46,7 +51,7 @@ public class AddressLineParser {
                     final String streetName = tokens.get(0).text;
                     return new Result(streetName, houseNumber, null);
                 } else if (tokens.get(1).type == WORD_STARTING_WITH_DIGIT) {
-                    final String[] parts = splitHouseNumberAndAddition(tokens.get(0).text);
+                    final String[] parts = splitHouseNumberAndAddition(tokens.get(1).text);
                     final Long houseNumber = (parts.length >= 1) ? Long.parseLong(parts[0]) : 0L;
                     final String addition = (parts.length >= 2) ? parts[1] : null;
                     final String streetName = tokens.get(0).text;
@@ -67,7 +72,7 @@ public class AddressLineParser {
                     return new Result(streetName, houseNumber, addition);
                 } else if (lastToken.type == WORD_STARTING_WITH_DIGIT) {
                     // StreetName HouseNumber+Addition
-                    final String[] parts = splitHouseNumberAndAddition(tokens.get(0).text);
+                    final String[] parts = splitHouseNumberAndAddition(lastToken.text);
                     final Long houseNumber = (parts.length >= 1) ? Long.parseLong(parts[0]) : 0L;
                     final String addition = (parts.length >= 2) ? parts[1] : null;
                     final String streetName = theAddressLine.substring(0, lastToken.startIndex);
@@ -89,10 +94,10 @@ public class AddressLineParser {
         } else if (tokens.get(0).type == NUMBER) {
             // HouseNumber StreetName [Addition]
             final Long houseNumber = Long.parseLong(tokens.get(0).text);
-            final String addition = (tokens.get(lastTokenIdx).type == WORD_STARTING_WITH_DIGIT) ? tokens.get(lastTokenIdx).text : null;
+            final String addition = (tokens.get(lastTokenIdx).type != WORD_NOT_STARTING_WITH_DIGIT) ? tokens.get(lastTokenIdx).text : null;
 
             // Determine the start and end index of the street name.
-            final int streetNameStartIdx = tokens.get(1).text.length() + 1;
+            final int streetNameStartIdx = tokens.get(1).startIndex;
             final int streetNameEndIdx = (addition != null) ? theAddressLine.length() - addition.length() - 1 : theAddressLine.length();
             if (streetNameEndIdx <= streetNameStartIdx) {
                 throw new IllegalArgumentException("Invalid address line: Street name is missing (" + theAddressLine + ").");
@@ -106,14 +111,16 @@ public class AddressLineParser {
             final String[] parts = splitHouseNumberAndAddition(tokens.get(0).text);
             final Long houseNumber = (parts.length >= 1) ? Long.parseLong(parts[0]) : 0L;
             final String addition = (parts.length >= 2) ? parts[1] : null;
-            final String streetName = theAddressLine.substring(tokens.get(0).endIndex + 1);
+            final String streetName = theAddressLine.substring(tokens.get(0).endIndex);
+
+            return new Result(streetName, houseNumber, addition);
         }
 
         throw new IllegalArgumentException("Invalid address line: " + theAddressLine);
     }
 
     public static String[] splitHouseNumberAndAddition(String houseNumberAddition) {
-        String[] parts = houseNumberAddition.split("(?<=\\d)(?=[^\\d])|(?<=[^\\d])(?=\\d)");
+        String[] parts = houseNumberAddition.split("(?<=\\d)(?=[^\\d])|(?<=[^\\d])(?=\\d)", 2);
         return parts;
     }
 
