@@ -8,6 +8,7 @@ import org.apache.camel.support.language.DefaultAnnotationExpressionFactory;
 import org.apache.camel.support.language.LanguageAnnotation;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.List;
 
 /**

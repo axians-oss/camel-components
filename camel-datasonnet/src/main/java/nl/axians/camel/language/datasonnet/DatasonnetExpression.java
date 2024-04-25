@@ -70,6 +70,19 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
     @Setter
     private List<String> inputNames;
 
+    private final List<Library> libraries;
+
+    /**
+     * Create a new {@link DatasonnetExpression} with the given expression.
+     *
+     * @param theExpression The Datasonnet expression.
+     */
+    public DatasonnetExpression(final String theExpression, final List<Library> theLibraries) {
+        name = theExpression;
+        expression = loadResource(theExpression);
+        libraries = theLibraries;
+    }
+
     /**
      * Create a new {@link DatasonnetExpression} with the given expression.
      *
@@ -78,7 +91,9 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
     public DatasonnetExpression(final String theExpression) {
         name = theExpression;
         expression = loadResource(theExpression);
+        libraries = new ArrayList<>();
     }
+
 
     private String loadResource(String theExpression) {
         if (theExpression.startsWith("resource:classpath:")) {
@@ -122,10 +137,7 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
                     .withImports(resolveImports(language))
                     .withDefaultOutput(MediaTypes.APPLICATION_JAVA);
 
-            Set<Library> additionalLibraries = theContext.getRegistry().findByType(Library.class);
-            log.info("Found {} additional libraries", additionalLibraries.size());
-            for (Library lib : additionalLibraries) {
-                log.info("Adding library: {}", lib.getClass().getName());
+            for (Library lib : libraries) {
                 builder = builder.withLibrary(lib);
             }
 

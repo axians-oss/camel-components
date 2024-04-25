@@ -2,6 +2,7 @@ package nl.axians.camel.language.datasonnet;
 
 import com.datasonnet.Mapper;
 import com.datasonnet.document.MediaType;
+import com.datasonnet.spi.Library;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import lombok.extern.slf4j.Slf4j;
@@ -12,14 +13,14 @@ import org.apache.camel.support.SingleInputTypedLanguageSupport;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 
 @Slf4j
 @Language("datasonnet")
 public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
+
+    private final List<Library> libraries = new ArrayList<>();
 
     /**
      * Create map of Datasonnet libraries found on the classpath.
@@ -88,7 +89,7 @@ public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
         final String bodyMediaType = property(String.class, theProperties, 2, null);
         final String outputMediaType = property(String.class, theProperties, 3, null);
 
-        final DatasonnetExpression expr = new DatasonnetExpression(expression);
+        final DatasonnetExpression expr = new DatasonnetExpression(expression, libraries);
         expr.setSource(theSource);
         expr.setResultType(property(Class.class, theProperties, 0, null));
 
@@ -101,6 +102,7 @@ public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
         }
 
         if (getCamelContext() != null) {
+
             expr.init(getCamelContext());
         }
 
@@ -135,6 +137,15 @@ public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
      */
     public Map<String, String> getDatasonnetImports() {
         return CLASSPATH_IMPORTS;
+    }
+
+    /**
+     * Get the list of libraries.
+     *
+     * @return The list of libraries.
+     */
+    public List<Library> getLibraries() {
+        return libraries;
     }
 
 }
