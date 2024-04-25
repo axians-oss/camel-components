@@ -5,13 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import nl.axians.camel.language.datasonnet.DatasonnetLanguage;
 import org.apache.camel.spi.Language;
 import org.apache.camel.spi.LanguageCustomizer;
-import org.apache.camel.spring.boot.CamelAutoConfiguration;
-import org.apache.camel.spring.boot.util.ConditionalOnCamelContextAndAutoConfigurationBeans;
 import org.apache.camel.spring.boot.util.HierarchicalPropertiesEvaluator;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
@@ -21,8 +17,6 @@ import java.util.Optional;
  * The Auto-configuration class for the DataSonnet type converters.
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter(CamelAutoConfiguration.class)
-@Conditional(ConditionalOnCamelContextAndAutoConfigurationBeans.class)
 @Slf4j
 public class DataSonnetAutoConfiguration {
 
