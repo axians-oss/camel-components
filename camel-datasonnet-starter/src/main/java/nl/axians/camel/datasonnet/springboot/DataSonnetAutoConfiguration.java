@@ -13,7 +13,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,9 +36,8 @@ public class DataSonnetAutoConfiguration {
         return new DataSonnetTypeConverters();
     }
 
-    @Lazy
     @Bean
-    public org.apache.camel.spi.LanguageCustomizer configureDatasonnetLanguage(
+    public LanguageCustomizer configureDatasonnetLanguage(
             final ApplicationContext applicationContext,
             final Optional<List<Library>> libraries) {
 
