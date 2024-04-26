@@ -20,8 +20,6 @@ import java.util.function.Supplier;
 @Language("datasonnet")
 public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
 
-    private final List<Library> libraries = new ArrayList<>();
-
     /**
      * Create map of Datasonnet libraries found on the classpath.
      */
@@ -89,7 +87,7 @@ public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
         final String bodyMediaType = property(String.class, theProperties, 2, null);
         final String outputMediaType = property(String.class, theProperties, 3, null);
 
-        final DatasonnetExpression expr = new DatasonnetExpression(expression, libraries);
+        final DatasonnetExpression expr = new DatasonnetExpression(expression);
         expr.setSource(theSource);
         expr.setResultType(property(Class.class, theProperties, 0, null));
 
@@ -137,15 +135,6 @@ public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
      */
     public Map<String, String> getDatasonnetImports() {
         return CLASSPATH_IMPORTS;
-    }
-
-    /**
-     * Get the list of libraries.
-     *
-     * @return The list of libraries.
-     */
-    public List<Library> getLibraries() {
-        return libraries;
     }
 
 }

@@ -1,6 +1,7 @@
 package nl.axians.camel.language.datasonnet;
 
 import com.datasonnet.document.MediaType;
+import com.datasonnet.spi.Library;
 import org.apache.camel.support.builder.ValueBuilder;
 
 import java.util.List;
@@ -24,6 +25,17 @@ public final class DatasonnetBuilderSupport {
         DatasonnetExpression exp = new DatasonnetExpression(theExpression);
         exp.setResultType(theResultType);
         exp.setInputNames(List.of(theInputNames));
+        return new ValueBuilder(exp);
+    }
+
+    public static ValueBuilder dsonnet(final List<Library> theLibraries,
+                                       final String theExpression,
+                                       final Class<?> theResultType,
+                                       final String... theInputNames) {
+        DatasonnetExpression exp = new DatasonnetExpression(theExpression);
+        exp.setResultType(theResultType);
+        exp.setInputNames(List.of(theInputNames));
+        exp.setLibraries(theLibraries);
         return new ValueBuilder(exp);
     }
 

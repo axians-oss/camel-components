@@ -70,18 +70,9 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
     @Setter
     private List<String> inputNames;
 
-    private final List<Library> libraries;
-
-    /**
-     * Create a new {@link DatasonnetExpression} with the given expression.
-     *
-     * @param theExpression The Datasonnet expression.
-     */
-    public DatasonnetExpression(final String theExpression, final List<Library> theLibraries) {
-        name = theExpression;
-        expression = loadResource(theExpression);
-        libraries = theLibraries;
-    }
+    @Getter
+    @Setter
+    private List<Library> libraries;
 
     /**
      * Create a new {@link DatasonnetExpression} with the given expression.
@@ -137,7 +128,9 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
                     .withImports(resolveImports(language))
                     .withDefaultOutput(MediaTypes.APPLICATION_JAVA);
 
+            log.info("Adding libraries to Datasonnet expression: {}", libraries.size());
             for (Library lib : libraries) {
+                log.info("Adding library: {}", lib.getClass().getSimpleName());
                 builder = builder.withLibrary(lib);
             }
 
