@@ -87,5 +87,7 @@
         <module>camel-oauth2-starter</module>
         <module>camel-datasonnet-starter</module>
         <module>camel-datasonnet</module>
+        <module>camel-snowflake</module>
+        <module>camel-http-common</module>
     </modules>
 </project>

@@ -13,12 +13,16 @@
     <file url="file://$PROJECT_DIR$/camel-datasonnet-starter/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-datasonnet/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-datasonnet/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/camel-http-common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/camel-http-common/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-oauth2-starter/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-oauth2-starter/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-oauth2/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-oauth2/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-opentelemetry-starter/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/camel-opentelemetry-starter/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/camel-snowflake/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/camel-snowflake/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/tooling/spring-boot-starter-generator/src/main/java" charset="UTF-8" />
