@@ -54,8 +54,7 @@ public class SnowflakeOperationTests extends CamelTestSupport {
             private void buildSubmitStatementsRoute() {
                 // @formatter:off
                 from("direct:submit")
-                    .to(Snowflake.uri()
-                        .operation(SnowflakeOperation.SubmitStatements)
+                    .to(Snowflake.uri(SnowflakeOperation.SubmitStatements)
                         .build())
                     .to("mock:result")
                 .end();
@@ -68,8 +67,7 @@ public class SnowflakeOperationTests extends CamelTestSupport {
             private void buildCheckStatementStatusRoute() {
                 // @formatter:off
                 from("direct:status")
-                    .to(Snowflake.uri()
-                        .operation(SnowflakeOperation.CheckStatementStatus)
+                    .to(Snowflake.uri(SnowflakeOperation.CheckStatementStatus)
                         .build())
                     .to("mock:result")
                 .end();
@@ -79,8 +77,7 @@ public class SnowflakeOperationTests extends CamelTestSupport {
             private void buildCancelStatementRoute() {
                 // @formatter:off
                 from("direct:cancel")
-                    .to(Snowflake.uri()
-                        .operation(SnowflakeOperation.CancelStatement)
+                    .to(Snowflake.uri(SnowflakeOperation.CancelStatement)
                         .build())
                     .to("mock:result")
                 .end();
