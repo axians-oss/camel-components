@@ -21,7 +21,7 @@ public class SnowflakeProducer extends DefaultProducer {
                 "database": "%s",
                 "schema": "%s",
                 "statement": "%s",
-                "role": "%s",
+                "role": "%s"
             }""";
 
     private final SnowflakeEndpoint endpoint;
