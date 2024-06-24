@@ -39,7 +39,7 @@
         <developerConnection>scm:git:https://github.com/axians-oss/camel-components.git</developerConnection>
         <url>https://github.com/axians-oss/camel-components</url>
       <tag>HEAD</tag>
-  </scm>
+    </scm>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
