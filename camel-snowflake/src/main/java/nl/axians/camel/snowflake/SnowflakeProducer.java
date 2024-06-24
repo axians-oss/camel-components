@@ -42,7 +42,7 @@ public class SnowflakeProducer extends DefaultProducer {
         }
 
         switch (endpoint.getOperation()) {
-            case SubmitStatements: {
+            case SubmitStatement: {
                 final URI uri = new URI(url + "/statements");
                 final String requestBody = String.format(REQUEST_BODY,
                         endpoint.getConfiguration().getWarehouse(),

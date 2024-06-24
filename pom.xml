@@ -89,5 +89,6 @@
         <module>camel-datasonnet</module>
         <module>camel-snowflake</module>
         <module>camel-http-common</module>
+        <module>camel-snowflake-starter</module>
     </modules>
 </project>

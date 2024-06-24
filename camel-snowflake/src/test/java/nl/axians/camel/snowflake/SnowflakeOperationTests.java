@@ -219,7 +219,7 @@ public class SnowflakeOperationTests extends CamelTestSupport {
             private void buildSubmitStatementsRoute() {
                 // @formatter:off
                 from("direct:submit")
-                    .to(Snowflake.uri(SnowflakeOperation.SubmitStatements)
+                    .to(Snowflake.uri(SnowflakeOperation.SubmitStatement)
                         .warehouse("warehouse")
                         .database("database")
                         .schema("schema")

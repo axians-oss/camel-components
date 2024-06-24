@@ -7,7 +7,7 @@ public enum SnowflakeOperation {
     /**
      * Operation to submit one or more SQL statements to Snowflake.
      */
-    SubmitStatements,
+    SubmitStatement,
     /**
      * Operation to check the status of a SQL statement that was submitted to Snowflake asynchronously.
      */

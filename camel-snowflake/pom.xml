@@ -12,6 +12,26 @@
 
     <artifactId>camel-snowflake</artifactId>
 
+    <name>Axians :: Camel :: Components :: Snowflake</name>
+    <description>See README.md</description>
+    <url>https://github.com/axians-oss/camel-components</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Jacob Hoeflaken</name>
+            <email>jacob.hoeflaken@axians.com</email>
+            <organization>Axians</organization>
+            <organizationUrl>http://www.axians.nl</organizationUrl>
+        </developer>
+    </developers>
+
     <properties>
     </properties>
 

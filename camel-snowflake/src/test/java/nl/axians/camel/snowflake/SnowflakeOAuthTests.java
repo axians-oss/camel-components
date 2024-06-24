@@ -276,7 +276,7 @@ public class SnowflakeOAuthTests extends CamelTestSupport {
                 // @formatter:off
                 from("direct:start")
                     .to(Snowflake.uri()
-                        .operation(SnowflakeOperation.SubmitStatements)
+                        .operation(SnowflakeOperation.SubmitStatement)
                         .tokenUrl("http://localhost:1080/oauth/token")
                         .clientId("client_id")
                         .clientSecret("client_secret")
