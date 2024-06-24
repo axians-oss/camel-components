@@ -27,6 +27,13 @@ public class SnowflakeEndpoint extends DefaultEndpoint {
     @UriPath
     private final SnowflakeOperation operation;
 
+    @UriParam(label = "common", description = "Statement timeout in seconds.")
+    private Long timeoutSecs;
+
+    @UriParam(label = "common", description = "Whether statement should be executed asynchronous.", defaultValue = "false")
+    private Boolean async = false;
+
+
     private final SnowflakeClient client;
 
     public SnowflakeEndpoint(
@@ -80,6 +87,42 @@ public class SnowflakeEndpoint extends DefaultEndpoint {
      */
     public SnowflakeClient getClient() {
         return client;
+    }
+
+    /**
+     * Get the statement timeout in seconds.
+     *
+     * @return The statement timeout in seconds.
+     */
+    public Long getTimeoutSecs() {
+        return timeoutSecs;
+    }
+
+    /**
+     * Set the statement timeout in seconds.
+     *
+     * @param theTimeoutSecs The statement timeout in seconds.
+     */
+    public void setTimeoutSecs(Long theTimeoutSecs) {
+        timeoutSecs = theTimeoutSecs;
+    }
+
+    /**
+     * Get whether statement should be executed asynchronous.
+     *
+     * @return Whether statement should be executed asynchronous.
+     */
+    public Boolean getAsync() {
+        return async;
+    }
+
+    /**
+     * Set whether statement should be executed asynchronous.
+     *
+     * @param theAsync Whether statement should be executed asynchronous.
+     */
+    public void setAsync(Boolean theAsync) {
+        async = theAsync;
     }
 
 }

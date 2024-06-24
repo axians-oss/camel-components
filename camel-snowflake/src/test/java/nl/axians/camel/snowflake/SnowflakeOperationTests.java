@@ -229,6 +229,8 @@ public class SnowflakeOperationTests extends CamelTestSupport {
                         .clientId("client_id")
                         .clientSecret("client_secret")
                         .scope("scope")
+                        .timeoutSecs(45)
+                        .async(false)
                         .build())
                     .to("mock:result")
                 .end();
@@ -251,6 +253,8 @@ public class SnowflakeOperationTests extends CamelTestSupport {
                         .clientId("client_id")
                         .clientSecret("client_secret")
                         .scope("scope")
+                        .timeoutSecs(45)
+                        .async(false)
                         .build())
                     .to("mock:result")
                 .end();
@@ -270,6 +274,8 @@ public class SnowflakeOperationTests extends CamelTestSupport {
                         .clientId("client_id")
                         .clientSecret("client_secret")
                         .scope("scope")
+                        .timeoutSecs(45)
+                        .async(false)
                         .build())
                     .to("mock:result")
                 .end();

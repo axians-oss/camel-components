@@ -7,14 +7,18 @@ import org.apache.camel.support.DefaultProducer;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
-import static nl.axians.camel.snowflake.Snowflake.SNOWFLAKE_STATEMENT_HANDLE;
+import static nl.axians.camel.snowflake.Snowflake.*;
+import static nl.axians.camel.snowflake.SnowflakeOperation.*;
 
 /**
  * The Snowflake producer, which sends messages to the Snowflake API.
  */
 public class SnowflakeProducer extends DefaultProducer {
 
+    // TODO Timeout if specified in the URI.
+    // TODO Statement count if specified in the URI. Otherwise, default to 1.
     static final String REQUEST_BODY = """
             {
                 "warehouse": "%s",
@@ -44,7 +48,7 @@ public class SnowflakeProducer extends DefaultProducer {
 
         switch (endpoint.getOperation()) {
             case SubmitStatement: {
-                final URI uri = new URI(url + "/statements");
+                final URI uri = new URI(url + "/statements" + getQueryParameters(SubmitStatement, theExchange));
                 final String requestBody = String.format(REQUEST_BODY,
                         endpoint.getConfiguration().getWarehouse(),
                         endpoint.getConfiguration().getDatabase(),
@@ -59,7 +63,7 @@ public class SnowflakeProducer extends DefaultProducer {
                 if (statementHandle == null || statementHandle.isEmpty())
                     throw new SnowflakeException(SNOWFLAKE_STATEMENT_HANDLE + " header is missing or empty: Statement handle is required for operation: " + endpoint.getOperation());
 
-                final URI uri = new URI(url + "/statements/" + statementHandle);
+                final URI uri = new URI(url + "/statements/" + statementHandle + getQueryParameters(CheckStatementStatus, theExchange));
                 requestBuilder.uri(uri).GET();
                 break;
             }
@@ -68,7 +72,7 @@ public class SnowflakeProducer extends DefaultProducer {
                 if (statementHandle == null || statementHandle.isEmpty())
                     throw new SnowflakeException(SNOWFLAKE_STATEMENT_HANDLE + " header is missing or empty: Statement handle is required for operation: " + endpoint.getOperation());
 
-                final URI uri = new URI(url + "/statements/" + statementHandle + "/cancel");
+                final URI uri = new URI(url + "/statements/" + statementHandle + "/cancel" + getQueryParameters(CancelStatement, theExchange));
                 requestBuilder.uri(uri).POST(HttpRequest.BodyPublishers.noBody());
                 break;
             default:
@@ -77,6 +81,53 @@ public class SnowflakeProducer extends DefaultProducer {
 
         final HttpResponse<String> response = endpoint.getClient().sendRequest(requestBuilder.build());
         theExchange.getMessage().setBody(response.body());
+    }
+
+    /**
+     * Gets the query parameters for the given operation.
+     *
+     * @param theOperation The operation.
+     * @return The query parameters.
+     */
+    private String getQueryParameters(
+            @Nonnull final SnowflakeOperation theOperation,
+            @Nonnull final Exchange theExchange) {
+        final Map<String, Object> headers = theExchange.getIn().getHeaders();
+        final StringBuilder queryParameters = new StringBuilder();
+
+        if (headers.containsKey(SNOWFLAKE_REQUEST_ID)) {
+            queryParameters.append("&requestId=").append(headers.get(SNOWFLAKE_REQUEST_ID));
+        }
+
+        switch (theOperation) {
+            case SubmitStatement:
+                // Add optional parameters for submit statement.
+                if (headers.containsKey(SNOWFLAKE_RETRY)) {
+                    queryParameters.append("&retry=").append(headers.get(SNOWFLAKE_RETRY));
+                }
+
+                if (endpoint.getAsync()) {
+                    queryParameters.append("&async=true");
+                }
+                break;
+            case CheckStatementStatus:
+                // Add optional parameters for check statement status.
+                if (headers.containsKey(SNOWFLAKE_PARTITION)) {
+                    queryParameters.append("&partition=").append(headers.get(SNOWFLAKE_PARTITION));
+                }
+                break;
+            case CancelStatement:
+                // No optional parameters for cancel statement.
+                break;
+            default:
+                return "";
+        }
+
+        String query = queryParameters.toString();
+        if (!query.isEmpty())
+            query = "?" + query.substring(1);
+
+        return query;
     }
 
 }

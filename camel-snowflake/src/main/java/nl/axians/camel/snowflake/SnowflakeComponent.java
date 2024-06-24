@@ -42,7 +42,9 @@ public class SnowflakeComponent extends DefaultComponent {
         final SnowflakeConfiguration config = (configuration != null) ? configuration.copy() : new SnowflakeConfiguration();
         setProperties(config, theParameters);
 
-        return new SnowflakeEndpoint(theUri, this, SnowflakeOperation.valueOf(theRemaining), config);
+        final Endpoint endpoint = new SnowflakeEndpoint(theUri, this, SnowflakeOperation.valueOf(theRemaining), config);
+        setProperties(endpoint, theParameters);
+        return endpoint;
     }
 
     /**

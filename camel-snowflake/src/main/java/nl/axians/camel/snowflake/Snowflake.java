@@ -8,7 +8,12 @@ import jakarta.annotation.Nonnull;
 public final class Snowflake {
 
     public static final String SNOWFLAKE_COMPONENT_NAME = "snowflake";
+
     public static final String SNOWFLAKE_STATEMENT_HANDLE = "SnowflakeStatementHandle";
+    public static final String SNOWFLAKE_REQUEST_ID = "SnowflakeRequestId";
+    public static final String SNOWFLAKE_PARTITION = "SnowflakePartition";
+    public static final String SNOWFLAKE_STATEMENT_COUNT = "SnowflakeStatementCount";
+    public static final String SNOWFLAKE_RETRY = "SnowflakeRetry";
 
     /**
      * Constructor. Private to prevent instantiation.
@@ -50,6 +55,8 @@ public final class Snowflake {
         private String warehouse;
         private String role;
         private String schema;
+        private Long timeoutSecs;
+        private boolean async = false;
 
         /**
          * Sets the operation to perform.
@@ -162,6 +169,28 @@ public final class Snowflake {
         }
 
         /**
+         * Sets the statement timeout in seconds.
+         *
+         * @param theTimeoutSecs The statement timeout in seconds.
+         * @return The Snowflake URI builder.
+         */
+        public URIBuilder timeoutSecs(final long theTimeoutSecs) {
+            timeoutSecs = theTimeoutSecs;
+            return this;
+        }
+
+        /**
+         * Sets whether statement should be executed asynchronous.
+         *
+         * @param theAsync Whether statement should be executed asynchronous.
+         * @return The Snowflake URI builder.
+         */
+        public URIBuilder async(final boolean theAsync) {
+            async = theAsync;
+            return this;
+        }
+
+        /**
          * Builds the Camel URI.
          *
          * @return The Camel URI.
@@ -224,6 +253,17 @@ public final class Snowflake {
             if (schema != null && !schema.isBlank()) {
                 query.append("schema=");
                 query.append(schema);
+                query.append("&");
+            }
+
+            if (timeoutSecs != null) {
+                query.append("timeoutSecs=");
+                query.append(timeoutSecs);
+                query.append("&");
+            }
+
+            if (async) {
+                query.append("async=true");
             }
 
             // Remove trailing '&' if present.
