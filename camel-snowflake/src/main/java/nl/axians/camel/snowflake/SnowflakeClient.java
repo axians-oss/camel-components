@@ -44,6 +44,11 @@ public class SnowflakeClient {
             response = httpClient.send(requestWithAuth, HttpResponse.BodyHandlers.ofString());
         }
 
+        // We throw an exception if the request was unsuccessful.
+        if (response.statusCode() >= 400) {
+            throw new SnowflakeException("Request failed with status code " + response.statusCode() + ": " + response.body());
+        }
+
         return response;
     }
 
@@ -58,9 +63,7 @@ public class SnowflakeClient {
                 .method(theRequest.method(), theRequest.bodyPublisher().orElse(HttpRequest.BodyPublishers.noBody()));
 
         // Copy all headers from the original request.
-        theRequest.headers().map().forEach((key, value) -> {
-                builder.header(key, value.get(0));
-        });
+        theRequest.headers().map().forEach((key, value) -> builder.header(key, value.get(0)));
 
         // Add the Authorization header with the access token.
         builder.header("Authorization", "Bearer " + tokenManager.getToken().getAccessToken());
