@@ -34,7 +34,8 @@ public class SnowflakeProducer extends DefaultProducer {
     @Override
     public void process(final @Nonnull Exchange theExchange) throws Exception {
         final HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                .header("Content-Type", "application/json");
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json");
 
         String url = endpoint.getConfiguration().getBaseUrl();
         if (url.endsWith("/")) {
