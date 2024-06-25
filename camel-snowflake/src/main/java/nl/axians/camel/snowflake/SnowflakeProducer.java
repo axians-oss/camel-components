@@ -25,7 +25,10 @@ public class SnowflakeProducer extends DefaultProducer {
                 "database": "%s",
                 "schema": "%s",
                 "statement": "%s",
-                "role": "%s"
+                "role": "%s",
+                "parameters": {
+                    "MULTI_STATEMENT_COUNT": "%s"
+                }
             }""";
 
     private final SnowflakeEndpoint endpoint;
@@ -48,13 +51,18 @@ public class SnowflakeProducer extends DefaultProducer {
 
         switch (endpoint.getOperation()) {
             case SubmitStatement: {
+                String count = theExchange.getIn().getHeader(SNOWFLAKE_STATEMENT_COUNT, String.class);
+                if (count == null || count.isEmpty())
+                    count = "1";
+
                 final URI uri = new URI(url + "/statements" + getQueryParameters(SubmitStatement, theExchange));
                 final String requestBody = String.format(REQUEST_BODY,
                         endpoint.getConfiguration().getWarehouse(),
                         endpoint.getConfiguration().getDatabase(),
                         endpoint.getConfiguration().getSchema(),
                         theExchange.getIn().getBody(String.class),
-                        endpoint.getConfiguration().getRole());
+                        endpoint.getConfiguration().getRole(),
+                        count);
                 requestBuilder.uri(uri).POST(HttpRequest.BodyPublishers.ofString(requestBody));
                 break;
             }

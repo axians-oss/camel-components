@@ -199,7 +199,8 @@ public class SnowflakeOperationTests extends CamelTestSupport {
                 "database",
                 "schema",
                 "SELECT * FROM Customer",
-                "role");
+                "role",
+                "1");
     }
 
     @Override
