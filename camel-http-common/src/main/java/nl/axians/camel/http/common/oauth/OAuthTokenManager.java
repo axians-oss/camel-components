@@ -19,7 +19,7 @@ import java.time.Instant;
 public class OAuthTokenManager {
 
     public static final String OAUTH_REQUEST_BODY_TEMPLATE = "grant_type=client_credentials&" +
-            "client_id={0}&client_secret={1}&scope={2}";
+            "client_id={0}&client_secret={1}";
 
     private OAuthToken token;
     private final HttpClient httpClient;
@@ -40,11 +40,24 @@ public class OAuthTokenManager {
             @Nonnull final String theTokenUrl,
             @Nonnull final String theClientId,
             @Nonnull final String theClientSecret,
-            @Nonnull final String theScope) {
+            final String theScope,
+            final String tenantId) {
         httpClient = theHttpClient;
         tokenUrl = theTokenUrl;
         objectMapper = new ObjectMapper();
-        requestBody = MessageFormat.format(OAUTH_REQUEST_BODY_TEMPLATE, theClientId, theClientSecret, theScope);
+        String body = MessageFormat.format(OAUTH_REQUEST_BODY_TEMPLATE, theClientId, theClientSecret);
+
+        // Add the scope if it is not null or blank.
+        if (theScope != null && !theScope.isBlank()) {
+            body += "&scope=" + theScope;
+        }
+
+        // Add the tenant ID if it is not null or blank.
+        if (tenantId != null && !tenantId.isBlank()) {
+            body += "&tenant_id=" + tenantId;
+        }
+
+        requestBody = body;
     }
 
     /**
@@ -68,7 +81,7 @@ public class OAuthTokenManager {
      * @throws IOException If an error occurs while fetching the token.
      * @throws InterruptedException If the thread is interrupted while fetching the token.
      */
-    public void fetchToken() throws IOException, InterruptedException{
+    public void fetchToken() throws IOException, InterruptedException {
         final HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(tokenUrl))
                 .header("Content-Type", "application/x-www-form-urlencoded")

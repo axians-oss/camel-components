@@ -23,7 +23,7 @@ public class SnowflakeClient {
     public SnowflakeClient(@Nonnull final SnowflakeConfiguration theConfiguration) {
         httpClient = HttpClient.newHttpClient();
         tokenManager = new OAuthTokenManager(httpClient, theConfiguration.getTokenUrl(),
-                theConfiguration.getClientId(), theConfiguration.getClientSecret(), theConfiguration.getScope());
+                theConfiguration.getClientId(), theConfiguration.getClientSecret(), theConfiguration.getScope(), null);
     }
 
     /**

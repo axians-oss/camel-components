@@ -7,7 +7,7 @@ import java.time.Instant;
 /**
  * Represents an OAuth token.
  */
-public class OAuthToken {
+public class OAuthToken implements Token {
 
     private final String accessToken;
     private final Instant expiresAt;
