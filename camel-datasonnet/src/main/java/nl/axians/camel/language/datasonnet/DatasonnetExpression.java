@@ -111,31 +111,40 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
     @Override
     public void init(final CamelContext theContext) {
         super.init(theContext);
-
         language = (DatasonnetLanguage) theContext.resolveLanguage("datasonnet");
+
+        // Verify that the expression is not a property placeholder.
+        // This means that the expression is not a constant expression and cannot be initialized upfront.
+        if (expression.startsWith("${"))
+            return;
+
         language.computeIfMiss(name, () -> {
             log.info("Initializing Datasonnet expression {}", name);
-            final Set<String> names = new HashSet<>();
-            names.add("body");
-
-            // Make sure we have input names.
-            if (inputNames != null) {
-                names.addAll(inputNames);
-            }
-
-            MapperBuilder builder = new MapperBuilder(expression)
-                    .withInputNames(names)
-                    .withImports(resolveImports(language))
-                    .withDefaultOutput(MediaTypes.APPLICATION_JAVA);
-
-            log.info("Adding libraries to Datasonnet expression: {}", libraries.size());
-            for (Library lib : libraries) {
-                log.info("Adding library: {}", lib.getClass().getSimpleName());
-                builder = builder.withLibrary(lib);
-            }
-
-            return builder.build();
+            return createDataSonnetMapper(expression);
         });
+    }
+
+    private Mapper createDataSonnetMapper(final String expression) {
+        final Set<String> names = new HashSet<>();
+        names.add("body");
+
+        // Make sure we have input names.
+        if (inputNames != null) {
+            names.addAll(inputNames);
+        }
+
+        MapperBuilder builder = new MapperBuilder(expression)
+                .withInputNames(names)
+                .withImports(resolveImports(language))
+                .withDefaultOutput(MediaTypes.APPLICATION_JAVA);
+
+        log.info("Adding libraries to Datasonnet expression: {}", libraries.size());
+        for (Library lib : libraries) {
+            log.info("Adding library: {}", lib.getClass().getSimpleName());
+            builder = builder.withLibrary(lib);
+        }
+
+        return builder.build();
     }
 
     /**
@@ -178,8 +187,16 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
         final Map<String, Document<?>> inputs = getInputs(theExchange);
         inputs.put("body", body);
 
-        final Mapper mapper = language.lookup(name).orElseThrow(() ->
-                new IllegalStateException("Datasonnet expression not initialized: " + name));
+        final Mapper mapper = language.lookup(name).orElseGet(() -> {
+            if (name.startsWith("${")) {
+                final Expression camelExpression = theExchange.getContext().resolveLanguage("simple").createExpression(name);
+                final String expression = camelExpression.evaluate(theExchange, String.class);
+                return createDataSonnetMapper(expression);
+            }
+
+            throw new IllegalArgumentException("Datasonnet expression not found: " + name);
+        });
+
         if (resultType == null || resultType.equals(Document.class)) {
             return mapper.transform(body, inputs, outputMediaType, Object.class);
         } else {
