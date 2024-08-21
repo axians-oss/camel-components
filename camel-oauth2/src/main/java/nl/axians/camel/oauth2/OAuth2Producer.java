@@ -55,20 +55,41 @@ public class OAuth2Producer extends DefaultProducer {
 
         // Create the access token request form data request parameters
         final Map<String, String> formData = new HashMap<>();
-        formData.put("grant_type", "client_credentials");
+        formData.put("grant_type", configuration.getGrantType());
         if (configuration.getScope() != null) {
             formData.put("scope", configuration.getScope());
         }
         if (configuration.getRedirectURI() != null) {
             formData.put("redirect_uri", configuration.getRedirectURI());
         }
+        if (configuration.getUsername() != null) {
+            formData.put("username", configuration.getUsername());
+        }
+        if (configuration.getPassword() != null) {
+            formData.put("password", configuration.getPassword());
+        }
 
-        httpRequest = HttpRequest.newBuilder()
+        if (!configuration.isUseBasicAuthorization()) {
+            if (configuration.getClientId() != null) {
+                formData.put("client_id", configuration.getClientId());
+            }
+            if (configuration.getClientSecret() != null) {
+                formData.put("client_secret", configuration.getClientSecret());
+            }
+        }
+
+        // Create the access token request
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(new URI(configuration.getAccessTokenUrl()))
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("Authorization", configuration.getAuthorizationHeader())
-                .POST(HttpRequest.BodyPublishers.ofString(getFormDataAsString(formData)))
-                .build();
+                .POST(HttpRequest.BodyPublishers.ofString(getFormDataAsString(formData)));
+
+        // Add basic authorization header if configured.
+        if (configuration.isUseBasicAuthorization()) {
+            builder.header("Authorization", configuration.getAuthorizationHeader());
+        }
+
+        httpRequest = builder.build();
     }
 
     /**

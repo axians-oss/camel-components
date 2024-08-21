@@ -16,6 +16,11 @@ public class OAuth2ComponentConfiguration extends ComponentConfigurationProperti
     private String name;
 
     /**
+     * The grant type.
+     */
+    private String grantType = "client_credentials";
+
+    /**
      * The client id.
      */
     private String clientId;

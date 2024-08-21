@@ -1,6 +1,6 @@
 # Camel OAuth2 Component
 
-This is a Camel component that can be used to retrieve and cache OAuth2 tokens using the client credentials flow.
+This is a Camel component that can be used to retrieve and cache OAuth2 tokens using the client credentials and password flow.
 
 ## Usage
 The URI for the component is `oauth2:name`. The name is a user defined name for the retrieved token and should be unique for each client id and secret combination. 

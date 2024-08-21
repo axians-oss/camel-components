@@ -15,6 +15,9 @@ public class OAuth2Configuration implements Cloneable {
     @Metadata(required = true)
     private String name;
 
+    @UriParam(label = "security", defaultValue = "client_credentials")
+    private String grantType = "client_credentials";
+
     @UriParam(label = "security", secret = true)
     @Metadata(required = true)
     private String clientId;
@@ -37,6 +40,15 @@ public class OAuth2Configuration implements Cloneable {
     @UriParam(label = "common")
     private String redirectURI;
 
+    @UriParam(label = "security", secret = true)
+    private String username;
+
+    @UriParam(label = "security", secret = true)
+    private String password;
+
+    @UriParam(label = "security")
+    private boolean useBasicAuthorization = true;
+
     /**
      * The name of the access token. This is a user provided name and should be unique for each OAuth2
      * access token urt.
@@ -55,6 +67,24 @@ public class OAuth2Configuration implements Cloneable {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * Get the OAuth2 grant type. Default value is "client_credentials".
+     *
+     * @return The OAuth2 grant type.
+     */
+    public String getGrantType() {
+        return grantType;
+    }
+
+    /**
+     * Set the OAuth2 grant type.
+     *
+     * @param theGrantType The OAuth2 grant type.
+     */
+    public void setGrantType(String theGrantType) {
+        grantType = grantType;
     }
 
     /**
@@ -165,6 +195,60 @@ public class OAuth2Configuration implements Cloneable {
      */
     public void setAccessTokenUrl(String accessTokenUrl) {
         this.accessTokenUrl = accessTokenUrl;
+    }
+
+    /**
+     * Get the OAuth2 username.
+     *
+     * @return The OAuth2 username.
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     * Set the OAuth2 username.
+     *
+     * @param theUsername The OAuth2 username.
+     */
+    public void setUsername(String theUsername) {
+        username = theUsername;
+    }
+
+    /**
+     * Get the OAuth2 password.
+     *
+     * @return The OAuth2 password.
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Set the OAuth2 password.
+     *
+     * @param thePassword The OAuth2 password.
+     */
+    public void setPassword(String thePassword) {
+        password = thePassword;
+    }
+
+    /**
+     * Get the flag to indicate if basic authorization should be used.
+     *
+     * @return The flag to indicate if basic authorization should be used.
+     */
+    public boolean isUseBasicAuthorization() {
+        return useBasicAuthorization;
+    }
+
+    /**
+     * Set the flag to indicate if basic authorization should be used.
+     *
+     * @param theUseBasicAuthorization The flag to indicate if basic authorization should be used.
+     */
+    public void setUseBasicAuthorization(boolean theUseBasicAuthorization) {
+        useBasicAuthorization = theUseBasicAuthorization;
     }
 
     public String getAuthorizationHeader() {
