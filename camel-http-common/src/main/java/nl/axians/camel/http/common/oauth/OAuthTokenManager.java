@@ -7,9 +7,11 @@ import jakarta.annotation.Nonnull;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.time.Instant;
 
@@ -55,17 +57,19 @@ public class OAuthTokenManager {
         tokenUrl = theTokenUrl;
         objectMapper = new ObjectMapper();
         String body = MessageFormat.format(OAUTH_REQUEST_BODY_TEMPLATE,
-                theGrantType != null ? theGrantType : "client_credentials", theClientId, theClientSecret);
+                theGrantType != null ? theGrantType : "client_credentials",
+                URLEncoder.encode(theClientId, StandardCharsets.UTF_8),
+                URLEncoder.encode(theClientSecret, StandardCharsets.UTF_8));
 
 
         // Add the scope if it is not null or blank.
         if (theScope != null && !theScope.isBlank()) {
-            body += "&scope=" + theScope;
+            body += "&scope=" + URLEncoder.encode(theScope, StandardCharsets.UTF_8);
         }
 
         // Add the tenant ID if it is not null or blank.
         if (theTenantId != null && !theTenantId.isBlank()) {
-            body += "&tenant_id=" + theTenantId;
+            body += "&tenant_id=" + URLEncoder.encode(theTenantId, StandardCharsets.UTF_8);
         }
 
         // Add the username and password if the grant type is password.
@@ -76,7 +80,8 @@ public class OAuthTokenManager {
             if (thePassword == null || thePassword.isBlank()) {
                 throw new IllegalArgumentException("Password is required when grant type is password.");
             }
-            body += "&username=" + theUsername + "&password=" + thePassword;
+            body += "&username=" + URLEncoder.encode(theUsername, StandardCharsets.UTF_8) +
+                    "&password=" + URLEncoder.encode(thePassword, StandardCharsets.UTF_8);
         }
 
         requestBody = body;
