@@ -1,6 +1,7 @@
 package nl.axians.camel.snowflake;
 
 import jakarta.annotation.Nonnull;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.support.DefaultProducer;
 
@@ -15,6 +16,7 @@ import static nl.axians.camel.snowflake.SnowflakeOperation.*;
 /**
  * The Snowflake producer, which sends messages to the Snowflake API.
  */
+@Slf4j
 public class SnowflakeProducer extends DefaultProducer {
 
     // TODO Timeout if specified in the URI.
@@ -63,6 +65,7 @@ public class SnowflakeProducer extends DefaultProducer {
                         theExchange.getIn().getBody(String.class),
                         endpoint.getConfiguration().getRole(),
                         count);
+                log.debug("Snowflake request body: {}", requestBody);
                 requestBuilder.uri(uri).POST(HttpRequest.BodyPublishers.ofString(requestBody));
                 break;
             }
