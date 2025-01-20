@@ -5,12 +5,12 @@
     <parent>
         <groupId>nl.axians.camel</groupId>
         <artifactId>camel-components</artifactId>
-        <version>1.0.34-SNAPSHOT</version>
+        <version>1.0.34</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>camel-oauth2-starter</artifactId>
-    <version>1.0.34-SNAPSHOT</version>
+    <version>1.0.34</version>
 
     <name>Axians :: Camel :: Components :: OAuth2 Starter</name>
     <description>Spring Boot Apache Camel OAuth2 component starter. See README.md for details/</description>
@@ -36,7 +36,7 @@
         <connection>scm:https://github.com/axians-oss/camel-components.git</connection>
         <developerConnection>scm:git:https://github.com/axians-oss/camel-components.git</developerConnection>
         <url>https://github.com/axians-oss/camel-components</url>
-      <tag>HEAD</tag>
+      <tag>camel-components-1.0.34</tag>
   </scm>
 
     <properties>
