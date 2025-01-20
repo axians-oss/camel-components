@@ -107,9 +107,9 @@ steps:
         camel-datasonnet-starter.sonar.projectName=Axians Camel Components :: Camel DataSonnet Starter
         camel-datasonnet-starter.sonar.sources=.
         camel-datasonnet-starter.sonar.coverage.exclusions=src/test/**
-        camel-http-commons.sonar.projectName=Axians Camel Components :: Camel HTTP Common
-        camel-http-commons.sonar.sources=.
-        camel-http-commons.sonar.coverage.exclusions=src/test/**
+        camel-http-common.sonar.projectName=Axians Camel Components :: Camel HTTP Common
+        camel-http-common.sonar.sources=.
+        camel-http-common.sonar.coverage.exclusions=src/test/**
         camel-oauth2.sonar.projectName=Axians Camel Components :: Camel OAuth2
         camel-oauth2.sonar.sources=.
         camel-oauth2.sonar.coverage.exclusions=src/test/**
