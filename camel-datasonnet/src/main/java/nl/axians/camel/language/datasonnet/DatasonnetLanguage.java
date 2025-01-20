@@ -2,13 +2,13 @@ package nl.axians.camel.language.datasonnet;
 
 import com.datasonnet.Mapper;
 import com.datasonnet.document.MediaType;
-import com.datasonnet.spi.Library;
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Expression;
 import org.apache.camel.Predicate;
 import org.apache.camel.spi.annotations.Language;
+import org.apache.camel.support.LRUCacheFactory;
 import org.apache.camel.support.SingleInputTypedLanguageSupport;
 
 import java.io.IOException;
@@ -33,7 +33,8 @@ public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
                             log.debug("Loading DataSonnet library: {}", resource.getPath());
                             CLASSPATH_IMPORTS.put(resource.getPath(), new String(bytes, StandardCharsets.UTF_8));
                         });
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                log.error("Failed to load DataSonnet libraries", e);
             }
         }
         log.debug("One time classpath search done");
@@ -42,8 +43,7 @@ public class DatasonnetLanguage extends SingleInputTypedLanguageSupport {
     /**
      * Cache of compiled DataSonnet scripts.
      */
-//    private final Map<String, Mapper> mapperCache = LRUCacheFactory.newLRUSoftCache(16, 1000, true);
-    private final Map<String, Mapper> mapperCache = new HashMap<>(16);
+    private final Map<String, Mapper> mapperCache = LRUCacheFactory.newLRUSoftCache(16, 1000, true);
 
     @Override
     public Predicate createPredicate(Expression source, String expression, Object[] properties) {

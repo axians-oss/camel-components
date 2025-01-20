@@ -1,5 +1,6 @@
-package nl.axians.camel.language.datasonnet;
+package nl.axians.camel.language.datasonnet.annotations;
 
+import nl.axians.camel.language.datasonnet.DatasonnetAnnotationExpressionFactory;
 import org.apache.camel.support.language.LanguageAnnotation;
 
 import java.lang.annotation.*;
@@ -38,8 +39,8 @@ public @interface Datasonnet {
     String outputMediaType() default "";
 
     /**
-     * The extra input names that should be available in the datasonnet expression.
+     * The extra inputs that should be available in the datasonnet expression.
      */
-    String[] inputNames();
+    Input[] inputs();
 
 }

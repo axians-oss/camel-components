@@ -39,7 +39,7 @@
     </scm>
 
     <properties>
-        <datasonnet.version>2.5.2-jakarta4</datasonnet.version>
+        <datasonnet.version>3.0.0</datasonnet.version>
         <classgraph.version>4.8.168</classgraph.version>
     </properties>
 

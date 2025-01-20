@@ -1,6 +1,7 @@
 package nl.axians.camel.language.datasonnet;
 
 import com.datasonnet.document.MediaType;
+import nl.axians.camel.language.datasonnet.annotations.Datasonnet;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Expression;
 import org.apache.camel.support.builder.ExpressionBuilder;
@@ -8,7 +9,7 @@ import org.apache.camel.support.language.DefaultAnnotationExpressionFactory;
 import org.apache.camel.support.language.LanguageAnnotation;
 
 import java.lang.annotation.Annotation;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -53,8 +54,12 @@ public class DatasonnetAnnotationExpressionFactory extends DefaultAnnotationExpr
                 expr.setOutputMediaType(MediaType.valueOf(annotation.outputMediaType()));
             }
 
-            if (annotation.inputNames() != null) {
-                expr.setInputNames(List.of(annotation.inputNames()));
+            if (annotation.inputs() != null) {
+                final List<DataSonnetInput> inputs = Arrays.stream(annotation.inputs())
+                        .map(input -> DataSonnetInput.of(input.value(), MediaType.valueOf(input.mediaType())))
+                        .toList();
+
+                expr.setInputs(inputs);
             }
         }
 

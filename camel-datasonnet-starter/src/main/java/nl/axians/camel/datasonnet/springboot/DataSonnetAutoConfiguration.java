@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Configuration;
 /**
  * The Auto-configuration class for the DataSonnet type converters.
  */
-@Configuration(proxyBeanMethods = false)
 @Slf4j
+@Configuration(proxyBeanMethods = false)
 public class DataSonnetAutoConfiguration {
 
     /**

@@ -20,7 +20,7 @@ public class DataSonnetTypeConverters implements TypeConverters {
      * @return The content of the theDocument as an InputStream.
      */
     @Converter
-    public static InputStream toInputStream(final DefaultDocument<String> theDocument) {
+    public InputStream toInputStream(final DefaultDocument<String> theDocument) {
         return new ByteArrayInputStream(theDocument.getContent().getBytes(StandardCharsets.UTF_8));
     }
 

@@ -1,0 +1,136 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  - group: 'MavenSettingsVariableGroup'
+
+steps:
+  - task: DownloadSecureFile@1
+    displayName: 'Download GPG private key'
+    inputs:
+      secureFile: 'gpg-private-key.asc'
+
+  - script: |
+      gpg --batch --import $(Agent.TempDirectory)/gpg-private-key.asc
+    displayName: 'Import GPG private key'
+
+  - task: CmdLine@2
+    displayName: 'Checkout branch'
+    inputs:
+      script: |
+        git config --global user.email "AxiansIS@vinci-energies.net"
+        git config --global user.name "AxiansIS"
+        git checkout -b $(Build.SourceBranchName)
+
+  - task: Bash@3
+    displayName: 'Add sonatype credentials to settings.xml'
+    inputs:
+      targetType: 'inline'
+      script: |
+        cat <<EOF > ./settings.xml
+        <settings>
+            <servers>
+                <server>
+                    <id>ossrh</id>
+                    <username>$(SonatypeUsername)</username>
+                    <password>$(SonatypePassword)</password>
+                </server>
+            </servers>
+        </settings>
+        EOF    
+
+  - task: Maven@4
+    displayName: 'Maven prepare'
+    inputs:
+      mavenPomFile: 'pom.xml'
+      mavenOptions: '-Xmx3072m'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.21'
+      jdkArchitectureOption: 'x64'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      goals: 'release:prepare'
+      options: >
+        -B -DscmCommentPrefix="[skip ci]"
+        -s ./settings.xml
+        -Dusername=PAT
+        -Dpassword=$(GitHubPAT)
+
+  - task: Maven@4
+    displayName: 'Maven release'
+    env:
+      MAVEN_GPG_PASSPHRASE: $(GpgPassphrase)
+    inputs:
+      mavenPomFile: 'pom.xml'
+      mavenOptions: >
+        -Xmx3072m
+        --enable-native-access=ALL-UNNAMED
+        -Dorg.apache.lucene.store.MMapDirectory.enableMemorySegments=false
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.21'
+      jdkArchitectureOption: 'x64'
+      publishJUnitResults: true
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      goals: 'clean release:perform -P sonatype'
+      options: >
+        -B -DscmCommentPrefix="[skip ci]"
+        -s ./settings.xml
+        -Dusername=PAT
+        -Dpassword=$(GitHubPAT)
+        -Dowasp.db.connectionString=$(OwaspDbConnectionString)
+        -Dowasp.db.username=$(OwaspDbUsername)
+        -Dowasp.db.password=$(OwaspDbPassword)
+        -Dowasp.nvd.api_key=$(OwaspNvdApiKey)
+
+  - task: SonarCloudPrepare@3
+    displayName: 'Prepare Analysis on SonarCloud'
+    inputs:
+      SonarCloud: 'SonarCloud'
+      organization: 'axians'
+      scannerMode: 'cli'
+      configMode: manual
+      cliProjectKey: nl.axians.camel:camel-components
+      cliProjectName: Axians Camel Components
+      cliSources: src
+      extraProperties: |
+        sonar.branch.name=$(Build.SourceBranchName)
+        sonar.projectBaseDir=./target/checkout
+        sonar.java.binaries=target/classes
+        sonar.java.libraries=**/*
+        sonar.modules=camel-datasonnet,camel-datasonnet-starter,camel-http-common,camel-oauth2,camel-oauth2-starter,camel-snowflake,camel-snowflake-starter
+        camel-datasonnet.sonar.projectName=Axians Camel Components :: Camel DataSonnet
+        camel-datasonnet.sonar.sources=.
+        camel-datasonnet.sonar.coverage.exclusions=src/test/**
+        camel-datasonnet-starter.sonar.projectName=Axians Camel Components :: Camel DataSonnet Starter
+        camel-datasonnet-starter.sonar.sources=.
+        camel-datasonnet-starter.sonar.coverage.exclusions=src/test/**
+        camel-http-commons.sonar.projectName=Axians Camel Components :: Camel HTTP Common
+        camel-http-commons.sonar.sources=.
+        camel-http-commons.sonar.coverage.exclusions=src/test/**
+        camel-oauth2.sonar.projectName=Axians Camel Components :: Camel OAuth2
+        camel-oauth2.sonar.sources=.
+        camel-oauth2.sonar.coverage.exclusions=src/test/**
+        camel-oauth2-starter.sonar.projectName=Axians Camel Components :: Camel OAuth2 Starter
+        camel-oauth2-starter.sonar.sources=.
+        camel-oauth2-starter.sonar.coverage.exclusions=src/test/**
+        camel-snowflake.sonar.projectName=Axians Camel Components :: Camel Snowflake
+        camel-snowflake.sonar.sources=.
+        camel-snowflake.sonar.coverage.exclusions=src/test/**
+        camel-snowflake-starter.sonar.projectName=Axians Camel Components :: Camel Snowflake Starter
+        camel-snowflake-starter.sonar.sources=.
+        camel-snowflake-starter.sonar.coverage.exclusions=src/test/**
+        sonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+        sonar.junit.reportPaths=target/surefire-reports
+        sonar.externalIssuesReportPaths=target/sonar-dependency-check-report.json
+
+  - task: SonarCloudAnalyze@3
+    displayName: 'Perform Sonar scan'
+
+  - task: SonarCloudPublish@3
+    displayName: 'Publish analysis to SonarCloud'
+    inputs:
+      pollingTimeoutSec: '300'
+

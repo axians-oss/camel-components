@@ -16,14 +16,13 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static nl.axians.camel.language.datasonnet.DatasonnetBuilderSupport.dsonnet;
-import static nl.axians.camel.language.datasonnet.DatasonnetBuilderSupport.dsonnetVarName;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-public class MappingTests extends CamelTestSupport {
+class MappingTests extends CamelTestSupport {
 
     @Test
-    public void shouldUseBodyAndVariables() throws Exception {
+    void shouldUseBodyAndVariables() throws Exception {
         // Arrange
         final String body = loadResource("/simple-mapping-payload.json");
         final String expectedResult = loadResource("/simple-mapping-result.json");
@@ -43,7 +42,7 @@ public class MappingTests extends CamelTestSupport {
     }
 
     @Test
-    public void shouldUseStreamCacheBodyAndVariables() throws Exception {
+    void shouldUseStreamCacheBodyAndVariables() throws Exception {
         // Arrange
         final String body = loadResource("/simple-mapping-payload.json");
         final InputStreamCache streamCache = new InputStreamCache(body.getBytes(StandardCharsets.UTF_8));
@@ -74,12 +73,15 @@ public class MappingTests extends CamelTestSupport {
 
                 // @formatter:off
                 from("direct:transform")
-                    .setProperty(dsonnetVarName("property", MediaTypes.APPLICATION_JSON), constant(property))
-                    .setHeader(dsonnetVarName("header", MediaTypes.APPLICATION_JSON), constant(header))
-                    .setProperty(dsonnetVarName("email", MediaTypes.APPLICATION_JAVA), constant("john.doe@heaven.com"))
-                    .setProperty(dsonnetVarName("name", MediaTypes.APPLICATION_JAVA), jsonpath("$.name", String.class))
+                    .setProperty("property", constant(property))
+                    .setHeader("header", constant(header))
+                    .setProperty("email", constant("john.doe@heaven.com"))
+                    .setProperty("name",  jsonpath("$.name", String.class))
                     .transform(dsonnet("resource:classpath:/simple-mapping.ds", String.class,
-                            "property", "header", "email", "name"))
+                            DataSonnetInput.of("property", MediaTypes.APPLICATION_JSON),
+                            DataSonnetInput.of("header", MediaTypes.APPLICATION_JSON),
+                            DataSonnetInput.of("email", MediaTypes.APPLICATION_JAVA),
+                            DataSonnetInput.of("name", MediaTypes.APPLICATION_JAVA)))
                     .to("mock:result");
                 // @formatter:on
             }

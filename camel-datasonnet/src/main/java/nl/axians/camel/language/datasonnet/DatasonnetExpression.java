@@ -30,9 +30,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.regex.Matcher;
 
-import static nl.axians.camel.language.datasonnet.DatasonnetConstants.VARIABLE;
-import static nl.axians.camel.language.datasonnet.DatasonnetConstants.VARIABLE_SEPARATOR;
-
 /**
  * Represents a Datasonnet expression.
  */
@@ -68,7 +65,7 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
 
     @Getter
     @Setter
-    private List<String> inputNames;
+    private List<DataSonnetInput> inputs;
 
     @Getter
     @Setter
@@ -125,16 +122,17 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
     }
 
     private Mapper createDataSonnetMapper(final String expression) {
-        final Set<String> names = new HashSet<>();
-        names.add("body");
+        final Set<DataSonnetInput> allInputs = new HashSet<>();
+        allInputs.add(DataSonnetInput.of("body", null));
 
         // Make sure we have input names.
-        if (inputNames != null) {
-            names.addAll(inputNames);
+        if (inputs != null) {
+            allInputs.addAll(this.inputs);
         }
 
+        final List<String> inputNames = allInputs.stream().map(DataSonnetInput::getName).toList();
         MapperBuilder builder = new MapperBuilder(expression)
-                .withInputNames(names)
+                .withInputNames(inputNames)
                 .withImports(resolveImports(language))
                 .withDefaultOutput(MediaTypes.APPLICATION_JAVA);
 
@@ -161,8 +159,9 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T evaluate(final Exchange theExchange,
-                          final Class<T> theType) {
+    public <T> T evaluate(
+            final Exchange theExchange,
+            final Class<T> theType) {
         Document<?> result = doEvaluate(theExchange);
         if (!theType.equals(Object.class)) {
             return ExchangeHelper.convertToType(theExchange, theType, result.getContent());
@@ -180,27 +179,28 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
      * @return The result of the evaluation as a {@link Document}.
      */
     private Document<?> doEvaluate(final Exchange theExchange) {
-        final MediaType bodyMediaType = getBodyMediaType(theExchange);
-        final MediaType outputMediaType = getOutputMediaType(theExchange);
-        final Document<?> body = getBodyAsDocument(theExchange, bodyMediaType);
+        final MediaType mediaTypeBody = getBodyMediaType(theExchange);
+        final MediaType mediaTypeOutput = getOutputMediaType(theExchange);
+        final Document<?> body = getBodyAsDocument(theExchange, mediaTypeBody);
 
-        final Map<String, Document<?>> inputs = getInputs(theExchange);
-        inputs.put("body", body);
+        final Map<String, Document<?>> inputDocuments = getInputs(theExchange);
+        inputDocuments.put("body", body);
 
         final Mapper mapper = language.lookup(name).orElseGet(() -> {
             if (name.startsWith("${")) {
+                // The expression is a property placeholder, so we need to evaluate it first.
                 final Expression camelExpression = theExchange.getContext().resolveLanguage("simple").createExpression(name);
-                final String expression = camelExpression.evaluate(theExchange, String.class);
-                return createDataSonnetMapper(expression);
+                final String expr = camelExpression.evaluate(theExchange, String.class);
+                return createDataSonnetMapper(expr);
             }
 
             throw new IllegalArgumentException("Datasonnet expression not found: " + name);
         });
 
         if (resultType == null || resultType.equals(Document.class)) {
-            return mapper.transform(body, inputs, outputMediaType, Object.class);
+            return mapper.transform(body, inputDocuments, mediaTypeOutput, Object.class);
         } else {
-            return mapper.transform(body, inputs, outputMediaType, resultType);
+            return mapper.transform(body, inputDocuments, mediaTypeOutput, resultType);
         }
     }
 
@@ -314,25 +314,24 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
      * @return A {@link Map} containing the inputs.
      */
     private Map<String, Document<?>> getInputs(final Exchange theExchange) {
-        Map<String, Document<?>> inputs = new HashMap<>();
+        final Map<String, Document<?>> inputDocuments = new HashMap<>();
 
-        // Add all properties that start with the Datasonnet variable prefix.
-        theExchange.getProperties().forEach((key, value) -> {
-            if (key.startsWith(VARIABLE)) {
-                final Variable variable = new Variable(key);
-                inputs.put(variable.name, getDocument(theExchange, variable.mediaType, value));
+        // Add all Exchange properties registered as inputs.
+        inputs.forEach(input -> {
+            Object value = null;
+
+            if (theExchange.getProperties().containsKey(input.getName())) {
+                value = theExchange.getProperties().get(input.getName());
+            } else if (theExchange.getIn().getHeaders().containsKey(input.getName())) {
+                value = theExchange.getIn().getHeaders().get(input.getName());
+            } else {
+                log.warn("DataSonnet input {} not found in exchange properties or headers. Setting value to null.", input.getName());
             }
+
+            inputDocuments.put(input.getName(), getDocument(theExchange, input.getMediaType(), value));
         });
 
-        // Add all headers that start with the Datasonnet variable prefix.
-        theExchange.getIn().getHeaders().forEach((key, value) -> {
-            if (key.startsWith(VARIABLE)) {
-                final Variable variable = new Variable(key);
-                inputs.put(variable.name, getDocument(theExchange, variable.mediaType, value));
-            }
-        });
-
-        return inputs;
+        return inputDocuments;
     }
 
     /**
@@ -355,8 +354,9 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
                 try {
                     Files.walkFileTree(nextLibDir.toPath(), new SimpleFileVisitor<>() {
 
+                        @NotNull
                         @Override
-                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        public FileVisitResult visitFile(Path file, @NotNull BasicFileAttributes attrs) throws IOException {
                             final File f = file.toFile();
                             if (!f.isDirectory() && f.getName().toLowerCase().endsWith(".libsonnet")) {
                                 final String content = Files.readString(file.toAbsolutePath(), StandardCharsets.UTF_8);
@@ -392,30 +392,6 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
     @Override
     public String toString() {
         return "datasonnet: " + getExpressionText();
-    }
-
-    /**
-     * Represents a Datasonnet variable.
-     */
-    @Getter
-    static class Variable {
-        private final MediaType mediaType;
-        private final String name;
-
-        /**
-         * Create a new {@link Variable} with the given name and value.
-         *
-         * @param theVariableName The name of the variable.
-         */
-        public Variable(final String theVariableName) {
-            final String[] parts = theVariableName.split(VARIABLE_SEPARATOR);
-            if (parts.length != 3) {
-                throw new RuntimeCamelException("Invalid Datasonnet variable name: " + theVariableName);
-            }
-
-            name = parts[2];
-            mediaType = MediaType.valueOf(parts[1]);
-        }
     }
 
 }
