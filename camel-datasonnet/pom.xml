@@ -5,11 +5,11 @@
     <parent>
         <groupId>nl.axians.camel</groupId>
         <artifactId>camel-components</artifactId>
-        <version>1.0.33-SNAPSHOT</version>
+        <version>1.0.34-SNAPSHOT</version>
     </parent>
 
     <artifactId>camel-datasonnet</artifactId>
-    <version>1.0.33-SNAPSHOT</version>
+    <version>1.0.34-SNAPSHOT</version>
 
     <name>Axians :: Camel :: Components :: DataSonnet</name>
     <description>Apache Camel DataSonnet. See README.md for details/</description>
