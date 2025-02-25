@@ -317,19 +317,21 @@ public class DatasonnetExpression extends ExpressionAdapter implements Expressio
         final Map<String, Document<?>> inputDocuments = new HashMap<>();
 
         // Add all Exchange properties registered as inputs.
-        inputs.forEach(input -> {
-            Object value = null;
+        if (inputs != null) {
+            inputs.forEach(input -> {
+                Object value = null;
 
-            if (theExchange.getProperties().containsKey(input.getName())) {
-                value = theExchange.getProperties().get(input.getName());
-            } else if (theExchange.getIn().getHeaders().containsKey(input.getName())) {
-                value = theExchange.getIn().getHeaders().get(input.getName());
-            } else {
-                log.warn("DataSonnet input {} not found in exchange properties or headers. Setting value to null.", input.getName());
-            }
+                if (theExchange.getProperties().containsKey(input.getName())) {
+                    value = theExchange.getProperties().get(input.getName());
+                } else if (theExchange.getIn().getHeaders().containsKey(input.getName())) {
+                    value = theExchange.getIn().getHeaders().get(input.getName());
+                } else {
+                    log.warn("DataSonnet input {} not found in exchange properties or headers. Setting value to null.", input.getName());
+                }
 
-            inputDocuments.put(input.getName(), getDocument(theExchange, input.getMediaType(), value));
-        });
+                inputDocuments.put(input.getName(), getDocument(theExchange, input.getMediaType(), value));
+            });
+        }
 
         return inputDocuments;
     }

@@ -1,7 +1,6 @@
 /** DataSonnet
 version=2.5
 default=null
-input body application/json
 output application/json
 */
 
