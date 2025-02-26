@@ -84,7 +84,7 @@ public class OAuth2Configuration implements Cloneable {
      * @param theGrantType The OAuth2 grant type.
      */
     public void setGrantType(String theGrantType) {
-        grantType = grantType;
+        grantType = theGrantType;
     }
 
     /**
